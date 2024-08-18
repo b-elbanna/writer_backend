@@ -9,4 +9,4 @@ class CustomUser(AbstractUser):
     )
     age = models.IntegerField(null=True, blank=None)
     country = models.CharField(max_length=50, null=True, blank=None)
-    user_credits = models.IntegerField(default=0)
+    user_credits = models.IntegerField(default=100000)
