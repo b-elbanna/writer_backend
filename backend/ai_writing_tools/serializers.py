@@ -6,6 +6,17 @@ from .models import (
 )
 
 
+class SortByRelatednessSerializer(serializers.Serializer):
+    query = serializers.CharField(max_length=255)
+    # language = serializers.CharField(max_length=2)
+    data_array = serializers.ListField(
+        child=serializers.CharField(max_length=255),
+        allow_empty=False,
+        min_length=2,
+        max_length=50,
+    )
+
+
 class GetArticleDescriptionSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=50, trim_whitespace=True, required=True)
 
@@ -16,12 +27,13 @@ class ArticleOutlineSerializer(serializers.Serializer):
 
 
 class TextCompletionSerializer(serializers.ModelSerializer):
-    lang = serializers.ChoiceField(choices=(("en", "English"), ("ar", "Arabic")))
-
     class Meta:
         model = TextCompletion
         read_only_fields = ("id", "user", "used_credits")
-        fields = "title", "original_text", "is_sentence", "project", "lang"
+        fields = (
+            "original_text",
+            "project",
+        )
 
 
 class TextImprovementSerializer(serializers.ModelSerializer):
@@ -40,14 +52,22 @@ class TextImprovementSerializer(serializers.ModelSerializer):
 
 
 class ProjectListCreateSerializer(serializers.ModelSerializer):
-    lang = serializers.ChoiceField(choices={"en": "English", "ar": "Arabic"})
+    lang = serializers.ChoiceField(choices=[("en", "English"), ("ar", "Arabic")])
     used_credits = serializers.IntegerField(read_only=True)
     user_name = serializers.CharField(source="user.username", read_only=True)
     outline = serializers.JSONField()
 
     class Meta:
         model = Project
-        read_only_fields = ("id", "user", "chatbox", "used_credits")
+
+        read_only_fields = (
+            "id",
+            "user",
+            "article",
+            "article_text",
+            "chatbox",
+            "used_credits",
+        )
         fields = (
             "id",
             "lang",
@@ -55,6 +75,8 @@ class ProjectListCreateSerializer(serializers.ModelSerializer):
             "name",
             "chatbox",
             "description",
+            "article",
+            "article_text",
             "outline",
             "used_credits",
             "user_name",
@@ -62,14 +84,15 @@ class ProjectListCreateSerializer(serializers.ModelSerializer):
             "modified_at",
         )
 
-    def validate_name(self, value):
-        user = self.context["request"].user
+    # def validate_name(self, value):
+    #     user = self.context["request"].user
+    #     print(user)
 
-        if Project.objects.filter(user=user, name=value).exists():
-            raise serializers.ValidationError(
-                "You already have a project with this name."
-            )
-        return value
+    #     if Project.objects.filter(user=user, name=value).exists():
+    #         raise serializers.ValidationError(
+    #             "You already have a project with this name."
+    #         )
+    #     return value
 
 
 class ProjectRetrieveUpdateDestroySerializer(serializers.ModelSerializer):

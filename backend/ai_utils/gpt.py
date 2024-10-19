@@ -1,7 +1,9 @@
 from collections import namedtuple
 from openai import OpenAI
 from openai.types import Completion
-from django.conf import settings
+
+# from django.conf import settings
+from core import settings
 import tiktoken
 from tenacity import retry, wait_exponential, stop_after_attempt
 import re
@@ -169,19 +171,25 @@ def text_completion(
     lang: str = available_langs.english,
     description=None,
     sentence=False,
-    max_tokens=100,
+    max_tokens=10,
+    add_project_description=False,
 ):
     text = prepare_last_sentence(text) if not sentence else text
-
+    system_message = (
+        f"The paragraph is within an article. complete without any formatting "
+        if not title
+        else f"The paragraph is within an article with the title {title}. complete without any formatting."
+    )
     messages = [
         {
             "role": "system",
-            "content": f"you will be given the start of a paragrah and your goal is to complete it.\n\
-					The paragraph is within an article with the title {title}. ",
+            # "content": f"you will be given a paragrah and your goal is to complete it.\n\
+            # 		The paragraph is within an article with the title {title}. ",
+            "content": system_message,
         },
-        {"role": "user", "content": text},
+        {"role": "user", "content": f"{text}"},
     ]
-    if description:
+    if description and add_project_description:
         messages[0]["content"] += f"The discription of the article is {description}"
 
     return chat_completion(messages=messages, max_tokens=max_tokens)

@@ -31,6 +31,7 @@ class Project(models.Model):
         return f"{self.name}|{ self.user.username}|{self.created_at}"
 
     class Meta:
+        unique_together = ("name", "user")
         ordering = ["-created_at"]
 
 
@@ -45,7 +46,6 @@ class TextImprovement(models.Model):
         Project, on_delete=models.CASCADE, related_name="textimprovements"
     )
     used_credits = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
     model_name = models.CharField(
         max_length=255,
         choices=available_models._asdict(),
@@ -53,7 +53,9 @@ class TextImprovement(models.Model):
     )
     improved_text = models.TextField()
     original_text = models.TextField()
-    n_tokens = models.IntegerField(default=0)
+    n_prompt_tokens = models.IntegerField(default=0)
+    n_gen_tokens = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-created_at"]
@@ -68,11 +70,12 @@ class TextCompletion(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="textcompletions"
     )
     project = models.ForeignKey(
-        Project, on_delete=models.CASCADE, related_name="textcompletions"
+        Project,
+        on_delete=models.CASCADE,
+        related_name="textcompletions",
+        null=True,
+        blank=True,
     )
-    n_tokens = models.IntegerField(default=0)
-    used_credits = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
     model_name = models.CharField(
         max_length=255,
         choices=available_models._asdict(),
@@ -81,6 +84,10 @@ class TextCompletion(models.Model):
     is_sentence = models.BooleanField(default=False)
     original_text = models.TextField()
     completion_text = models.TextField(null=True)
+    n_prompt_tokens = models.IntegerField(default=0)
+    n_gen_tokens = models.IntegerField(default=0)
+    used_credits = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-created_at"]

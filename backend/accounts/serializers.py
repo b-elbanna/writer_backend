@@ -55,6 +55,7 @@ class MyUserDetailsSerializer(UserDetailsSerializer):
         extra_fields.append(model.EMAIL_FIELD)
         extra_fields.append("first_name")
         extra_fields.append("last_name")
+        extra_fields.append("user_credits")
         extra_fields.append("is_staff")
         fields = ("pk", *extra_fields)
-        read_only_fields = ("email", "is_staff")
+        read_only_fields = ("email", "is_staff","user_credits")

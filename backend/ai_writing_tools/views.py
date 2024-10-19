@@ -6,6 +6,7 @@ from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from rest_framework import status
 from openai.types import Completion
 from ai_utils import (
@@ -14,6 +15,7 @@ from ai_utils import (
     create_outline,
     suggest_descriptions,
 )
+from ai_utils.embedding import sort_by_relatedness
 from ai_chat.models import ChatBox
 from .pricing import calc_credits
 from .models import (
@@ -28,7 +30,28 @@ from .serializers import (
     ProjectRetrieveUpdateDestroySerializer,
     ArticleOutlineSerializer,
     GetArticleDescriptionSerializer,
+    SortByRelatednessSerializer,
 )
+
+
+class SortByRelatednessView(GenericAPIView):
+    serializer_class = SortByRelatednessSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return None
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data: dict = serializer.validated_data
+        query = validated_data.get("query")
+        data_array = validated_data.get("data_array")
+        strings_and_relatednesses = sort_by_relatedness(query=query, array=data_array)
+        return Response(
+            strings_and_relatednesses,
+            status=status.HTTP_200_OK,
+        )
 
 
 class GetArticleDescriptionView(GenericAPIView):
@@ -88,36 +111,34 @@ class TextCompletionView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
-        user_project = None
-        try:
-            user_project = Project.objects.get(
-                user=self.request.user, id=validated_data["project"]
-            )
-        except Project.DoesNotExist:
-            return Response(
-                {"detail": "Project not found."}, status=status.HTTP_404_NOT_FOUND
-            )
+        user_project: Project = None
+
         res: Completion = text_completion(
-            title=user_project.title,
-            description=user_project.description,
-            sentence=validated_data["is_sentence"],
-            lang=validated_data["lang"],
+            max_tokens=10,
+            title=user_project and user_project.title,
+            description=user_project and user_project.description,
+            lang=user_project and user_project.lang,
             text=validated_data["original_text"],
         )
-
-        completion_text = res.choices[0].text
-        n_tokens = res.usage.total_tokens
-        used_credits = calc_credits("completion", n_tokens)
-        headers = self.get_success_headers(serializer.data)
-
+        completion_text = res.choices[0].message.content
+        n_gen_tokens = res.usage.completion_tokens
+        n_prompt_tokens = res.usage.prompt_tokens
+        # claculate credits usage
+        used_credits = calc_credits("completion", res.usage.total_tokens)
+        self.request.user.user_credits -= used_credits
+        self.request.user.save()
+        if user_project:
+            user_project.used_credits += used_credits
+            user_project.save()
         serializer.save(
             user=self.request.user,
             completion_text=completion_text,
             used_credits=used_credits,
-            n_tokens=n_tokens,
+            n_gen_tokens=n_gen_tokens,
+            n_prompt_tokens=n_prompt_tokens,
             project=user_project,
-            is_sentence=validated_data["is_sentence"],
         )
+        headers = self.get_success_headers(serializer.data)
         return Response(
             {"completion_text": completion_text, "used_credits": used_credits},
             status=status.HTTP_201_CREATED,
@@ -186,29 +207,39 @@ class ProjectListCreateView(ListCreateAPIView):
     def get_queryset(self):
         return self.request.user.projects.all()
 
-    def perform_create(self, serializer):
-        #      "lang",
-        #     "title",
-        #     "name",
-        #     "chatbox",
-        #     "description",
-        #     "outline",
-        title = self.request.data["title"]
-        name = self.request.data["name"]
-        outline: list[str] = self.request.data["outline"]
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        title = serializer.validated_data["title"]
+        name = serializer.validated_data["name"]
+        outline: list[str] = serializer.validated_data["outline"]
+        description: list[str] = serializer.validated_data["description"]
+        print(title, name, outline, description)
+
         article_temp: list = [
             {
-                "type": "heading-one",
+                "id": "1",
+                "type": "h1",
                 "children": [{"text": serializer.validated_data["title"]}],
             },
-            {"type": "paragraph", "children": [{"text": ""}]},
+            {"id": "2", "type": "p", "children": [{"text": ""}]},
         ]
         for heading in outline:
             article_temp.append(
-                {"type": "heading-two", "children": [{"text": heading}]}
+                {"id": heading[-4:], "type": "h2", "children": [{"text": heading}]}
             )
-            article_temp.append({"type": "paragraph", "children": [{"text": "..."}]})
-            article_temp.append({"type": "paragraph", "children": [{"text": ""}]})
+            article_temp.append(
+                {"id": heading[-3:], "type": "p", "children": [{"text": "..."}]}
+            )
+
+        if Project.objects.filter(user=self.request.user, name=name).exists():
+            print("Project with the same name already exists.")
+            return Response(
+                {"detail": "Project with the same name already exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         # check if there is an chatbox with the same name
         if ChatBox.objects.filter(user=self.request.user, name=name).exists():
             return Response(
@@ -221,7 +252,12 @@ class ProjectListCreateView(ListCreateAPIView):
             name=name,
             sys_message=f"you are researcher assistant and the research topic is {title}.",
         )
+        print("saved")
         serializer.save(
             user=self.request.user, chatbox=chatbox, article=json.dumps(article_temp)
         )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )

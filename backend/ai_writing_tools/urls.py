@@ -6,15 +6,16 @@ from .views import (
     TextCompletionView,
     ArticleOutlineView,
     GetArticleDescriptionView,
+    SortByRelatednessView,
 )
 
 urlpatterns = [
     # text improvement services
-    # path(
-    #     "sort-by-relatedness",
-    #     SortByRelatednessView.as_view(),
-    #     name="sort_by_relatedness",
-    # ),
+    path(
+        "sort-by-relatedness",
+        SortByRelatednessView.as_view(),
+        name="sort_by_relatedness",
+    ),
     path("tools/article-outline", ArticleOutlineView.as_view(), name="article_outline"),
     path(
         "tools/article-description",

@@ -16,4 +16,5 @@ urlpatterns = [
     path("api/v1/auth/", include("accounts.urls")),
     path("api/v1/chat/", include("ai_chat.urls")),
     path("api/v1/writing/", include("ai_writing_tools.urls")),
+    path("api/v1/qa/", include("QA_box.urls")),
 ]
