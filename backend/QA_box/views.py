@@ -1,12 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
 from .serializers import QABoxSerializer, QASearchSerializer, ResourceSerializer
 from .models import QABox, Resource
-from ai_utils import wiki, embedding
+from ai_utils import embedding
+from search_utils import wiki
 from .qa_utils import most_related_paragraphs
-from rest_framework import exceptions
 
 
 class BoxResourceListCreateView(ListCreateAPIView):
@@ -21,16 +21,27 @@ class BoxResourceListCreateView(ListCreateAPIView):
     def perform_create(self, serializer):
         qa_box_id = self.kwargs["pk"]
         qa_box = get_object_or_404(QABox, id=qa_box_id, user=self.request.user)
-        text = serializer.validated_data["text_source"]
-        embedded_text = embedding.EmbeddingText(text)
-        # Resource.
-        resource = serializer.save(
-            user=self.request.user,
-            embeddings=embedded_text.embeddings,
-            paragraphs=embedded_text.paragraphs,
-        )
-        resource.qaBoxes.add(qa_box)
-        resource.projects.add(qa_box.project)
+        try:
+            resource = Resource.objects.get(
+                url=serializer.validated_data["url"],
+                type=serializer.validated_data["type"],
+            )
+
+            serializer.validated_data["embeddings"] = resource.embeddings
+            serializer.validated_data["paragraphs"] = resource.paragraphs
+            resource.qaBoxes.add(qa_box)
+            resource.projects.add(qa_box.project)
+        except Resource.DoesNotExist:
+            text = serializer.validated_data["text_source"]
+            embedded_text = embedding.EmbeddingText(text)
+            # Resource.
+            resource = serializer.save(
+                user=self.request.user,
+                embeddings=embedded_text.embeddings,
+                paragraphs=embedded_text.paragraphs,
+            )
+            resource.qaBoxes.add(qa_box)
+            resource.projects.add(qa_box.project)
 
 
 class ResourceListCreateView(ListCreateAPIView):
@@ -71,7 +82,7 @@ class QABoxGetAnswerView(RetrieveAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         query = serializer.validated_data["q"]
-        qa_box = QABox.objects.get(id=qa_box_id)
+        qa_box = get_object_or_404(QABox, id=qa_box_id, user=self.request.user)
         resources = qa_box.resources.all()
         resources_embededchunks: list[embedding.EmbeddedChunk] = []
         for resource in resources:

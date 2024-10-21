@@ -2,9 +2,6 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from ai_writing_tools.models import Project
 import uuid
-from ai_utils import wiki, embedding
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 
 
 #################################

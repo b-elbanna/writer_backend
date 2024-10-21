@@ -40,10 +40,16 @@ class ResourceSerializer(serializers.ModelSerializer):
         ]
 
     def get_chucks_number(self, obj):
-        return len(obj.paragraphs)
+        try:
+            return len(obj.get("paragraphs"))
+        except:
+            return len(obj.paragraphs)
 
     def get_embeddings_number(self, obj):
-        return len(obj.embeddings)
+        try:
+            return len(obj.get("embeddings"))
+        except:
+            return len(obj.embeddings)
 
 
 class QAMessageSerializer(serializers.ModelSerializer):

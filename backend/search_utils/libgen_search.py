@@ -24,8 +24,8 @@ class LibgenBook:
 
     def __init__(self, result: dict):
         self.id = result.get("ID")
-        self.title = result.get("Title")
-        self.size = result.get("Size")
+        self.title: str = result.get("Title")
+        self.size: str = result.get("Size")
         self.pages = result.get("Pages")
         self.year = result.get("Year")
         self.language = result.get("Language")
@@ -39,7 +39,7 @@ class LibgenBook:
     @property
     def pdf_url(self):
         download_link = libgen.resolve_download_links(self.result)["GET"]
-        return download_link
+        return str(download_link)
 
 
 def search_in_libgen_pdf_books(query: str) -> list[LibgenBook]:

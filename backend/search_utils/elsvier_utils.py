@@ -1,10 +1,15 @@
 import requests
 
+
+# Daily Request Limits:
+# The Scopus API allows a maximum of 20,000 requests per day.
+# Rate Limits: There is a rate limit of 5 requests per second.
 # https://dev.elsevier.com/sc_search_tips.html
 # https://dev.elsevier.com/scopus.html#!/Scopus_Search/ScopusSearch
+
+
 api_key = "6f5914ca1357e015db8060b66ebb273e"
-query_scopus = "TITLE(chemistry) AND OPENACCESS(1)"
-# query_scopus = "black holes"
+query_scopus = "TITLE(black holes) AND OPENACCESS(1)"
 url_scopus = f"https://api.elsevier.com/content/search/scopus?query={query_scopus}&apiKey={api_key}"
 # https://dx.doi.org/
 
@@ -16,7 +21,8 @@ url_scopus = f"https://api.elsevier.com/content/search/scopus?query={query_scopu
 
 rescontent = ""
 with open("test.json", "w", encoding="utf-8") as f:
-    rescontent = requests.get(url_scopus, headers={"X-ELS-APIKey": api_key})
+    # url_scopus doesn't required api_key
+    rescontent = requests.get(url_scopus)
     f.write(rescontent.text)
 
 
