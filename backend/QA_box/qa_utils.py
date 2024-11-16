@@ -7,9 +7,10 @@ class paragraphRelatedness:
     relatedness score for each paragraph is a number out of 1
     """
 
-    def __init__(self, paragraph, relatedness):
+    def __init__(self, paragraph, relatedness, resource_name):
         self.paragraph = paragraph
         self.relatednessScore = relatedness
+        self.resource_name = resource_name
 
 
 # extract resource text content
@@ -35,6 +36,7 @@ def most_related_paragraphs(
                 question_embedding.data[0].embedding,
                 embedded_chunck.embedding,
             ),
+            embedded_chunck.resource_name,
         )
         for embedded_chunck in embeddedChunks
     ]

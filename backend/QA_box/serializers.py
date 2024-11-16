@@ -2,6 +2,17 @@ from .models import Resource, QAMessage, QABox
 from rest_framework import serializers
 
 
+class FilePdfSerializer(serializers.Serializer):
+    file = serializers.FileField(allow_empty_file=False, required=True)
+
+    def validate_file(self, value):
+        if value.size > 1024 * 1024 * 5:  # 5MB
+            raise serializers.ValidationError("File size exceeds 5MB")
+        if value.content_type != "application/pdf":
+            raise serializers.ValidationError("Only pdf files are allowed")
+        return value
+
+
 class QASearchSerializer(serializers.Serializer):
     q = serializers.CharField(max_length=80, trim_whitespace=True)
 
@@ -13,7 +24,6 @@ class ResourceSerializer(serializers.ModelSerializer):
     embeddings_number = serializers.SerializerMethodField()
     text_source = serializers.CharField(
         min_length=3,
-        max_length=10000,
         required=True,
         write_only=True,
         trim_whitespace=True,
@@ -28,7 +38,6 @@ class ResourceSerializer(serializers.ModelSerializer):
             "text_source",
             "url",
             "username",
-            # "qaBoxes",
             "name",
             "type",
             "created_at",
@@ -38,6 +47,17 @@ class ResourceSerializer(serializers.ModelSerializer):
             "user",
             # "qaBoxes",
         ]
+
+    # validation of the qabox id is exists
+    def validate_qa_box_id(self, value):
+        request = self.context["request"]
+        try:
+            QABox.objects.get(id=value, user=request.user)
+        except:
+            raise serializers.ValidationError(
+                f'Invalid pk "{value}" - QABox does not exist.'
+            )
+        return value
 
     def get_chucks_number(self, obj):
         try:

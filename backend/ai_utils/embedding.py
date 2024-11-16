@@ -11,9 +11,10 @@ import re
 
 class EmbeddedChunk:
 
-    def __init__(self, text, embedding=None):
+    def __init__(self, text, embedding=None, resource_name=None):
         self.paragraph: str = text
         self.embedding: list[float] = embedding
+        self.resource_name: str = resource_name
 
     def __repr__(self) -> str:
         return f"({self.paragraph[:5].strip().strip()}...[{len(self.paragraph)}]...{self.paragraph[-5:].strip().strip()} | [{len(self.embedding)}] embedding_length)  \n"
@@ -24,23 +25,26 @@ class EmbeddedChunk:
 
 class EmbeddingText:
     def __init__(
-        self, text: str = None, embeddings: list = None, paragraphs: list = None
+        self,
+        text: str = None,
+        embeddings: list = None,
+        paragraphs: list = None,
+        resource_name=None,
     ):
 
-        print("embeddingtext created")
         if text == embeddings == paragraphs == None:
             raise ValueError("text or embeddings or paragraphs must be provided")
 
         self.__chunks = None
         if text is None:
             self.__chunks = [
-                EmbeddedChunk(paragraph, embedding)
+                EmbeddedChunk(paragraph, embedding, resource_name)
                 for paragraph, embedding in zip(paragraphs, embeddings)
             ]
         else:
-            self.__chunks = self.__divide_and_embed(text)
+            self.__chunks = self.__divide_and_embed(text, resource_name)
 
-        # self.__full_paragraph = text
+        self.resource_name = resource_name
         self.__paragraphs = paragraphs
         self.__embeddings = embeddings
 
@@ -93,7 +97,7 @@ class EmbeddingText:
     #         return " ".join(self.__paragraphs)
     #     return " ".join(self.paragraphs)
 
-    def __divide_and_embed(self, full_paragraph: str):
+    def __divide_and_embed(self, full_paragraph: str, resource_name=None):
         """
         estimated time of execution: 1 second per 5_000 token
         """
@@ -131,7 +135,10 @@ class EmbeddingText:
             usage += embed_req.usage.total_tokens
             _input = []
             n_avg_tokens = 0
-        return [EmbeddedChunk(para, emb) for para, emb in zip(paragraphs, embeddings)]
+        return [
+            EmbeddedChunk(para, emb, resource_name)
+            for para, emb in zip(paragraphs, embeddings)
+        ]
 
     def __create_chunks(self, text, n):
         """Returns successive n-sized chunks from provided text."""

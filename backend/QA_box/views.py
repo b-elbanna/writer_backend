@@ -1,12 +1,64 @@
+import PyPDF2
+
+import re
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
-from .serializers import QABoxSerializer, QASearchSerializer, ResourceSerializer
+from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveAPIView
+from .serializers import (
+    QABoxSerializer,
+    QASearchSerializer,
+    ResourceSerializer,
+    FilePdfSerializer,
+)
 from .models import QABox, Resource
 from ai_utils import embedding
 from search_utils import wiki
 from .qa_utils import most_related_paragraphs
+from rest_framework.parsers import FileUploadParser
+
+from django.core.files.uploadedfile import InMemoryUploadedFile
+
+
+class FileUploadView(GenericAPIView):
+    # parser_classes = [FileUploadParser]
+    serializer_class = FilePdfSerializer
+
+    def post(self, request, format=None):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        file: InMemoryUploadedFile = serializer.validated_data["file"]
+        file_name = file.name
+        file_size = file.size
+        file_type = file.content_type
+        pdf_reader = PyPDF2.PdfReader(file)
+        print(pdf_reader.metadata)
+        print("###################")
+        print(pdf_reader.outline)
+        print("###################")
+        print("###################")
+        text = ""
+        for page in pdf_reader.pages:
+            text += page.extract_text()
+
+        paragraphs = re.split(r"\n{2,}|\n", text)
+
+        # Remove any empty strings from the list
+        paragraphs = list(filter(None, paragraphs))
+        return Response(
+            {
+                "file_name": file_name,
+                "file_size": file_size,
+                "file_type": file_type,
+                "text": paragraphs,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class ExtractPdfDataView(GenericAPIView):
+    pass
 
 
 class BoxResourceListCreateView(ListCreateAPIView):
@@ -31,10 +83,10 @@ class BoxResourceListCreateView(ListCreateAPIView):
             serializer.validated_data["paragraphs"] = resource.paragraphs
             resource.qaBoxes.add(qa_box)
             resource.projects.add(qa_box.project)
-        except Resource.DoesNotExist:
+        except:
+            # except Resource.DoesNotExist:
             text = serializer.validated_data["text_source"]
             embedded_text = embedding.EmbeddingText(text)
-            # Resource.
             resource = serializer.save(
                 user=self.request.user,
                 embeddings=embedded_text.embeddings,
@@ -53,7 +105,7 @@ class ResourceListCreateView(ListCreateAPIView):
 
     def perform_create(self, serializer):
 
-        text = serializer.validated_data.pop("text")
+        text = serializer.validated_data.pop("text_source")
         embedded_text = embedding.EmbeddingText(text)
         # Do something with the text field here
         serializer.save(
@@ -88,12 +140,18 @@ class QABoxGetAnswerView(RetrieveAPIView):
         for resource in resources:
             resources_embededchunks.extend(
                 embedding.EmbeddingText(
-                    embeddings=resource.embeddings, paragraphs=resource.paragraphs
+                    embeddings=resource.embeddings,
+                    paragraphs=resource.paragraphs,
+                    resource_name=f"{resource.type}|{resource.name}",
                 ).chunks
             )
         resualt = most_related_paragraphs(query, resources_embededchunks)
         answers = [
-            (textRlatedness.paragraph, textRlatedness.relatednessScore)
+            (
+                textRlatedness.paragraph,
+                textRlatedness.relatednessScore,
+                textRlatedness.resource_name,
+            )
             for textRlatedness in resualt
         ]
         return Response(

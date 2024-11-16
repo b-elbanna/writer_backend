@@ -14,9 +14,8 @@ from rest_framework.generics import (
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ai_utils.gpt import chat_completion,open_ai
-from ai_chat.utils import prepare_chatbox_messages 
-import os
+from ai_utils.gpt import chat_completion, open_ai
+from ai_chat.utils import prepare_chatbox_messages
 
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -28,11 +27,13 @@ class FileUploadView(APIView):
 
     def post(self, request):
         file: InMemoryUploadedFile = request.FILES.get("file", None)
-        res =None
+        res = None
         if file:
             try:
-                file.name = file.name+".webm"
-                res = open_ai.audio.transcriptions.create(model="whisper-1", file=(file.name, file.file,file.content_type))
+                file.name = file.name + ".webm"
+                res = open_ai.audio.transcriptions.create(
+                    model="whisper-1", file=(file.name, file.file, file.content_type)
+                )
             except Exception as e:
                 return Response(
                     {"error": str(e)},
@@ -54,11 +55,10 @@ class FileUploadView(APIView):
             )
 
 
-
-
 # Create your views here.
 class ChatView(TemplateView):
     template_name = "chatv1/indexws.html"
+
 
 class ChatBoxListCreateView(ListCreateAPIView):
     serializer_class = ChatBoxSerializer
@@ -84,14 +84,15 @@ class ChatMessageListCreateView(ListCreateAPIView):
     serializer_class = ChatMessageSerializer
     pagination_class = CustomPagination
 
-
     def perform_create(self, serializer):
         chatbox_id = self.kwargs["chatbox_id"]
-        user_msg = serializer.validated_data["user_msg"] 
+        user_msg = serializer.validated_data["user_msg"]
         messages = prepare_chatbox_messages(chatbox_id, user_msg)
         res = chat_completion(messages=messages)
-        assistant_msg =res.choices[0].message.content
-        serializer.save(user=self.request.user, chatbox_id=chatbox_id,assistant_msg=assistant_msg)
+        assistant_msg = res.choices[0].message.content
+        serializer.save(
+            user=self.request.user, chatbox_id=chatbox_id, assistant_msg=assistant_msg
+        )
 
     def get_queryset(self):
         user = self.request.user
