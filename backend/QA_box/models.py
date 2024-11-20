@@ -23,6 +23,10 @@ class QABox(models.Model):
     # resources = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ("name", "user")
+        ordering = ["-created_at"]
+
 
 class Resource(models.Model):
     id = models.UUIDField(
@@ -58,6 +62,9 @@ class Resource(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-created_at"]
+
 
 class QAMessage(models.Model):
     id = models.UUIDField(
@@ -83,3 +90,6 @@ class QAMessage(models.Model):
     answer = models.TextField()
     question = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]

@@ -27,7 +27,7 @@ class FileUploadView(APIView):
 
     def post(self, request):
         file: InMemoryUploadedFile = request.FILES.get("file", None)
-        res = None
+        print(file)
         if file:
             try:
                 file.name = file.name + ".webm"
@@ -90,6 +90,15 @@ class ChatMessageListCreateView(ListCreateAPIView):
         messages = prepare_chatbox_messages(chatbox_id, user_msg)
         res = chat_completion(messages=messages)
         assistant_msg = res.choices[0].message.content
+        # choices[0] = {
+        #   "finish_reason": "stop",
+        #   "index": 0,
+        #   "message": {
+        #     "content": "The 2020 World Series was played in Texas at Globe Life Field in Arlington.",
+        #     "role": "assistant"
+        #   },
+        #   "logprobs": null
+        # }
         serializer.save(
             user=self.request.user, chatbox_id=chatbox_id, assistant_msg=assistant_msg
         )

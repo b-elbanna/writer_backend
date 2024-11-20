@@ -77,6 +77,7 @@ def chat_completion(
     """
     if system_message:
         messages.insert(0, {"role": "system", "content": system_message})
+    messages
     return open_ai.chat.completions.create(messages=messages, model=model, **kwargs)
 
 

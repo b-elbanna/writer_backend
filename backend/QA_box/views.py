@@ -183,7 +183,7 @@ class QABoxListCreateView(ListCreateAPIView):
             name=page.title,
             embeddings=embedded_page.embeddings,
             paragraphs=embedded_page.paragraphs,
-            source=page.url,
+            url=page.url,
             type="wiki",
             user=self.request.user,
         )
