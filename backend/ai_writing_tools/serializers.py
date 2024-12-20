@@ -18,11 +18,11 @@ class SortByRelatednessSerializer(serializers.Serializer):
 
 
 class GetArticleDescriptionSerializer(serializers.Serializer):
-    title = serializers.CharField(max_length=50, trim_whitespace=True, required=True)
+    title = serializers.CharField(max_length=255, trim_whitespace=True, required=True)
 
 
 class ArticleOutlineSerializer(serializers.Serializer):
-    title = serializers.CharField(max_length=50, trim_whitespace=True, required=True)
+    title = serializers.CharField(max_length=255, trim_whitespace=True, required=True)
     description = serializers.CharField(required=False)
 
 
@@ -62,9 +62,10 @@ class ProjectListCreateSerializer(serializers.ModelSerializer):
 
         read_only_fields = (
             "id",
-            "user",
+            "qaBox",
             "article",
             "article_text",
+            "user",
             "chatbox",
             "used_credits",
         )
@@ -72,11 +73,12 @@ class ProjectListCreateSerializer(serializers.ModelSerializer):
             "id",
             "lang",
             "title",
-            "name",
-            "chatbox",
-            "description",
             "article",
             "article_text",
+            "name",
+            "chatbox",
+            "qaBox",
+            "description",
             "outline",
             "used_credits",
             "user_name",
@@ -101,6 +103,7 @@ class ProjectRetrieveUpdateDestroySerializer(serializers.ModelSerializer):
     name = serializers.CharField(read_only=True)
     user_name = serializers.CharField(source="user.username", read_only=True)
     used_credits = serializers.IntegerField(read_only=True)
+    article = serializers.JSONField()
 
     class Meta:
         model = Project
@@ -110,6 +113,7 @@ class ProjectRetrieveUpdateDestroySerializer(serializers.ModelSerializer):
             "title",
             "name",
             "chatbox",
+            "qaBox",
             "article_text",
             "article",
             "description",

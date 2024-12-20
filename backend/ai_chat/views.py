@@ -1,7 +1,8 @@
+from django.http import Http404
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-
+from django.shortcuts import get_object_or_404
 
 from .serializers import ChatBoxSerializer, ChatMessageSerializer
 from .models import ChatBox, ChatMessage
@@ -106,7 +107,9 @@ class ChatMessageListCreateView(ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         chatbox_id = self.kwargs["chatbox_id"]
-        queryset = ChatMessage.objects.filter(user=user, chatbox_id=chatbox_id)
+
+        queryset = get_object_or_404(ChatBox, id=chatbox_id, user=user).messages.all()
+
         return queryset
 
 

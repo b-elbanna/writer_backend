@@ -65,6 +65,6 @@ def extract_paragraph_from_text(text: str):
 if __name__ == "__main__":
     import timeit
 
-    ex_time = timeit.timeit(test_func, number=1)
+    # ex_time = timeit.timeit(test_func, number=1)
     # get_page("black hole", "en")
-    print(ex_time)
+    # print(ex_time)

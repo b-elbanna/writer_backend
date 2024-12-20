@@ -15,7 +15,9 @@ from ai_utils import (
     create_outline,
     suggest_descriptions,
 )
-from ai_utils.embedding import sort_by_relatedness
+from ai_utils.embedding import sort_by_relatedness, EmbeddingText
+from QA_box.models import QABox, Resource
+from search_utils import wiki
 from ai_chat.models import ChatBox
 from .pricing import calc_credits
 from .models import (
@@ -111,7 +113,7 @@ class TextCompletionView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
-        user_project: Project = None
+        user_project: Project = validated_data.get("project")
 
         res: Completion = text_completion(
             max_tokens=10,
@@ -213,6 +215,7 @@ class ProjectListCreateView(ListCreateAPIView):
 
         title = serializer.validated_data["title"]
         name = serializer.validated_data["name"]
+        lang = serializer.validated_data["lang"]
         outline: list[str] = serializer.validated_data["outline"]
         description: list[str] = serializer.validated_data["description"]
         print(title, name, outline, description)
@@ -234,7 +237,6 @@ class ProjectListCreateView(ListCreateAPIView):
             )
 
         if Project.objects.filter(user=self.request.user, name=name).exists():
-            print("Project with the same name already exists.")
             return Response(
                 {"detail": "Project with the same name already exists."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -252,9 +254,30 @@ class ProjectListCreateView(ListCreateAPIView):
             name=name,
             sys_message=f"you are researcher assistant and the research topic is {title}.",
         )
+        ################creating qabox################
+        # if QABox.objects.filter(user=self.request.user, name=name).exists():
+        #     return Response(
+        #         {"detail": "QABox with the same name already exists."},
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
+        # # Create ChatBox for the project
+        # qabox = QABox.objects.create(
+        #     user=self.request.user,
+        #     name=name,
+        # )
+        # serializer.save(
+        #     user=self.request.user,
+        #     chatbox=chatbox,
+        #     article=article_temp,
+        # ).qaBox = qabox
+        ########################################
+
         print("saved")
+
         serializer.save(
-            user=self.request.user, chatbox=chatbox, article=json.dumps(article_temp)
+            user=self.request.user,
+            chatbox=chatbox,
+            article=article_temp,
         )
 
         headers = self.get_success_headers(serializer.data)

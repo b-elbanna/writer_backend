@@ -410,7 +410,7 @@
 			let resdiv = document.querySelector(".response");
 			let url = `ws/chat`; //
 
-			url = `${wsprotocol}://${window.location.host}/ws/chat`;
+			url = `${wsprotocol}://${window.location.host}/ws/chat/39936d06-8485-4508-89c9-fabf26cdc3b1`;
 			const chatsocket = new WebSocket(url);
 			let lastmessage = "";
 
@@ -426,11 +426,8 @@
 				let message = e.target.prompt.value;
 				chatsocket.send(
 					JSON.stringify({
-						type: "chat.completion",
-						content: {
-							chatbox_id: "38d6e9fc-8b19-4a11-bdff-75bafde2c69c",
-							user_msg: message,
-						},
+						messages: [{ role: "user", content: message }],
+						model: "gpt_4",
 					})
 				);
 				e.target.reset();

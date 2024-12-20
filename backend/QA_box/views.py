@@ -4,7 +4,6 @@ import re
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveAPIView
 from .serializers import (
     QABoxSerializer,
@@ -173,21 +172,35 @@ class QABoxListCreateView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         search_title = serializer.validated_data["name"]
-        page = wiki.search(search_title, "en")[0]
-        # # get wiki page content
-        embedded_page = embedding.EmbeddingText(" ".join(page.sections))
-        # sections = page.sections
         project = serializer.validated_data.get("project")
-        # create resource
-        resource = Resource.objects.create(
-            name=page.title,
-            embeddings=embedded_page.embeddings,
-            paragraphs=embedded_page.paragraphs,
-            url=page.url,
-            type="wiki",
-            user=self.request.user,
-        )
+        page = None
+        pageExist = None
+        resource = None
         if project:
-            print(project)
-            resource.projects.add(project)
-        serializer.save(user=self.request.user).resources.add(resource)
+            search_title = project.title
+        pageExist = wiki.search(search_title, "en")
+        print("form views", pageExist)
+        if pageExist:
+
+            page = pageExist[0]
+
+            resource = Resource.objects.filter(type="wiki", name=page.title).first()
+            # create resource
+            if not resource:
+                embedded_page = embedding.EmbeddingText(" ".join(page.sections))
+                resource = Resource.objects.create(
+                    name=page.title,
+                    embeddings=embedded_page.embeddings,
+                    paragraphs=embedded_page.paragraphs,
+                    url=page.url,
+                    type="wiki",
+                    user=self.request.user,
+                )
+
+        resource.projects.add(project)
+        if resource:
+            resource.qaBoxes.add(
+                serializer.save(user=self.request.user, project=project)
+            )
+        else:
+            serializer.save(user=self.request.user, project=project)

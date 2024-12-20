@@ -12,6 +12,7 @@ class ChatConsumer(JsonWebsocketConsumer):
         user = self.scope.get("user")
         print(self.chat_id)
         print(user)
+        self.chatbox = user.chatboxes.get(id=self.chat_id)
         self.accept()
 
         # else:
@@ -22,7 +23,9 @@ class ChatConsumer(JsonWebsocketConsumer):
         """
         {"messages":[{"role":"user","content":"hi"}],"model":"gpt_4"}
         """
+        source_text: list[dict[str, str]] | None = res.get("source_text", None)
         messages: list[dict[str, str]] | None = res.get("messages", None)
+
         if messages:
 
             ## start ## chat.completion
@@ -41,12 +44,25 @@ class ChatConsumer(JsonWebsocketConsumer):
                 assistant_msg = ""
                 chunk: ChatCompletionChunk
                 finish_reason = ""
-                for chunk in streamed_chat_completion(
-                    [{"role": "system", "content": chatbox.sys_message}, *messages]
-                ):
+                get_answer_user_msg = f"answer the previous message using only the provided text_source.  text_source: '{source_text}'"
+                chat_stream_chunks = (
+                    streamed_chat_completion(
+                        system_message=chatbox.sys_message,
+                        messages=[
+                            *messages,
+                            {"role": "user", "content": get_answer_user_msg},
+                        ],
+                    )
+                    if source_text
+                    else streamed_chat_completion(
+                        system_message=chatbox.sys_message, messages=messages
+                    )
+                )
+                for chunk in chat_stream_chunks:
                     finish_reason = chunk.choices[0].finish_reason
                     res_content = chunk.choices[0].delta.content
                     assistant_msg += res_content or ""
+                    print(chunk.choices[0])
                     self.send_json(
                         {
                             "content": res_content,

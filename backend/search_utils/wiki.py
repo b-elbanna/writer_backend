@@ -105,9 +105,9 @@ def search(title: str, lang: str, n_suggestions: int = 10) -> list[WikiPage]:
             print(suggestion)
             # titles = wk.search(suggestion, results=n_suggestions)
             # disambiguations += titles
-            suggestions.remove(str(suggestion))
+            suggestions.remove(suggestion)
     # disambiguations = filter(lambda el: not is_disambiguation(el), disambiguations)
-    suggestions += disambiguations
+    # suggestions += disambiguations
 
     return [WikiPage(suggestion, lang) for suggestion in suggestions]
 

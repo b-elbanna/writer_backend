@@ -6,13 +6,12 @@ from .views import (
 )
 
 
+from django.urls import path
 
-from django.urls import path, include
 urlpatterns = [
     # path("", ChatView.as_view()),
-    path("messages/<chatbox_id>", ChatMessageListCreateView.as_view()),
-    path("chatbox/<pk>", ChatBoxRetrieveDestroyView.as_view()),
+    path("messages/<uuid:chatbox_id>", ChatMessageListCreateView.as_view()),
+    path("chatbox/<uuid:pk>", ChatBoxRetrieveDestroyView.as_view()),
     path("chatboxes", ChatBoxListCreateView.as_view()),
     path("voice", FileUploadView.as_view()),
-
 ]
