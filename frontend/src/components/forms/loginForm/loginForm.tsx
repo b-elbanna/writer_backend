@@ -13,6 +13,7 @@ import { FORM_ERROR } from "final-form";
 import { AxiosError, AxiosResponse } from "axios";
 import SmileFaceLoader from "@/loaders/smileFace/smileFace";
 import { LoginFormDataInterface } from "@/endpointActions/postLoginAction";
+import pagePaths from "@/urlPaths/pagePaths";
 
 export default function LoginForm() {
 	let router = useRouter();
@@ -20,7 +21,7 @@ export default function LoginForm() {
 		getUserLogin(values)
 			.then((resAxios: AxiosResponse) => {
 				if (resAxios.status === 200) {
-					router.push("/profile");
+					router.push(pagePaths.profilePage);
 				}
 				// console.log(resAxios)
 			})

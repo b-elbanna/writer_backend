@@ -1,3 +1,4 @@
+import pagePaths from "@/urlPaths/pagePaths";
 import Link from "next/link";
 
 export default function LogoHeader({ className }: { className?: string }) {
@@ -8,7 +9,10 @@ export default function LogoHeader({ className }: { className?: string }) {
        ${className}
       `}
 		>
-			<Link href={"/"} className={` text-[32px]  tracking-tighter italic`}>
+			<Link
+				href={pagePaths.homePage}
+				className={` text-[32px]  tracking-tighter italic`}
+			>
 				<span className="text-action tracking-tighter italic">AI</span>Writer
 			</Link>
 		</header>

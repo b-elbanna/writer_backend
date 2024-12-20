@@ -1,8 +1,10 @@
 import { CustomButton } from "@/components/forms/formFiels/customButton";
 import { getCurrentUserProject } from "@/rtk/slices/currentUserProject";
 import { useAppDispatch } from "@/rtk/store";
+import pagePaths from "@/urlPaths/pagePaths";
 import dateObjFromIsoStr from "@/utils/datTimeRep";
 import { EditIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export function ProjectsBox({ projects }: { projects: ProjectInterface[] }) {
@@ -25,7 +27,7 @@ export function ProjectBox({ project }: { project: ProjectInterface }) {
 	const handleEditArticleBtn = (event: React.MouseEvent<HTMLElement>) => {
 		event.preventDefault();
 		appDispatch(getCurrentUserProject({ projectId: project.id })).then(() => {
-			router.push(`/editor`);
+			router.push(pagePaths.projectPage + "/" + project.id);
 		});
 	};
 	return (
@@ -94,15 +96,15 @@ export function ProjectBox({ project }: { project: ProjectInterface }) {
 					</div>
 				</div>
 				<div className=" flex justify-center gap-4 items-center mt-1   border-t  borderlack py-3">
-					<CustomButton
-						className=" flex group gap-2 px-2 !bg-primary shadow text-main hover:!text-action active:!text-action !rounded !outline-none   py-1"
-						onClickFunc={handleEditArticleBtn}
-					>
-						<>
-							<EditIcon className=" stroke-main group-active:stroke-action group-hover:stroke-action duration-500 " />
-						</>
-						Edit
-					</CustomButton>
+					<button datatype="link">
+						<Link
+							className=" flex group gap-2 px-2 !bg-primary shadow text-main hover:!text-action active:!text-action !rounded !outline-none   py-1"
+							href={pagePaths.appPage + "/" + project.id}
+						>
+							<EditIcon className=" stroke-main group-active:stroke-action group-hover:stroke-action  " />
+							Edit
+						</Link>
+					</button>
 				</div>
 			</div>
 		</div>

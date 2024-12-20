@@ -56,7 +56,14 @@ import { LineHeightPlugin } from "@udecode/plate-line-height/react";
 import { LinkPlugin } from "@udecode/plate-link/react";
 import { TodoListPlugin } from "@udecode/plate-list/react";
 import { MarkdownPlugin } from "@udecode/plate-markdown";
-import { ImagePlugin, MediaEmbedPlugin } from "@udecode/plate-media/react";
+import {
+	AudioPlugin,
+	FilePlugin,
+	ImagePlugin,
+	MediaEmbedPlugin,
+	PlaceholderPlugin,
+	VideoPlugin,
+} from "@udecode/plate-media/react";
 import { NodeIdPlugin } from "@udecode/plate-node-id";
 import { ResetNodePlugin } from "@udecode/plate-reset-node/react";
 import { SelectOnBackspacePlugin } from "@udecode/plate-select";
@@ -94,6 +101,13 @@ import { TableRowElement } from "@/components/plate-ui/table-row-element";
 import { TodoListElement } from "@/components/plate-ui/todo-list-element";
 import { withDraggables } from "@/components/plate-ui/with-draggables";
 import Prism from "prismjs";
+import { CsvPlugin } from "@udecode/plate-csv";
+import { ImagePreview } from "@/components/plate-ui/image-preview";
+import { MediaUploadToast } from "../plate-ui/media-upload-toast";
+import { MediaAudioElement } from "../plate-ui/media-audio-element";
+import { MediaFileElement } from "../plate-ui/media-file-element";
+import { MediaPlaceholderElement } from "../plate-ui/media-placeholder-element";
+import { MediaVideoElement } from "../plate-ui/media-video-element";
 
 export default function useMyEditor(initialValue: any) {
 	const editor = createPlateEditor({
@@ -107,11 +121,47 @@ export default function useMyEditor(initialValue: any) {
 			LinkPlugin.configure({
 				render: { afterEditable: () => <LinkFloatingToolbar /> },
 			}),
-			ImagePlugin,
-			MediaEmbedPlugin,
-			CaptionPlugin.configure({
-				options: { plugins: [ImagePlugin, MediaEmbedPlugin] },
+			// start Media Plugins
+			ImagePlugin.extend({
+				options: { disableUploadInsert: true },
+				render: { afterEditable: ImagePreview },
 			}),
+			SelectOnBackspacePlugin.configure({
+				options: {
+					query: {
+						allow: [
+							HorizontalRulePlugin.key,
+							ImagePlugin.key,
+							VideoPlugin.key,
+							AudioPlugin.key,
+							FilePlugin.key,
+							MediaEmbedPlugin.key,
+						],
+					},
+				},
+			}),
+
+			MediaEmbedPlugin,
+			VideoPlugin,
+			AudioPlugin,
+			FilePlugin,
+			CaptionPlugin.configure({
+				options: {
+					plugins: [
+						ImagePlugin,
+						VideoPlugin,
+						AudioPlugin,
+						FilePlugin,
+						MediaEmbedPlugin,
+					],
+				},
+			}),
+			PlaceholderPlugin.configure({
+				options: { disableEmptyPlaceholder: true },
+				render: { afterEditable: MediaUploadToast },
+			}),
+			// end Media Plugins
+
 			TablePlugin,
 			TableRowPlugin,
 			TableCellPlugin,
@@ -240,13 +290,6 @@ export default function useMyEditor(initialValue: any) {
 					],
 				},
 			}),
-			SelectOnBackspacePlugin.configure({
-				options: {
-					query: {
-						allow: [ImagePlugin.key, HorizontalRulePlugin.key],
-					},
-				},
-			}),
 			SoftBreakPlugin.configure({
 				options: {
 					rules: [
@@ -291,6 +334,7 @@ export default function useMyEditor(initialValue: any) {
 			DocxPlugin,
 			MarkdownPlugin,
 			JuicePlugin,
+			CsvPlugin,
 		],
 		override: {
 			components: withDraggables(
@@ -306,9 +350,15 @@ export default function useMyEditor(initialValue: any) {
 					[HEADING_KEYS.h4]: withProps(HeadingElement, { variant: "h4" }),
 					[HEADING_KEYS.h5]: withProps(HeadingElement, { variant: "h5" }),
 					[HEADING_KEYS.h6]: withProps(HeadingElement, { variant: "h6" }),
-					[ImagePlugin.key]: ImageElement,
 					[LinkPlugin.key]: LinkElement,
+					// end media components
+					[AudioPlugin.key]: MediaAudioElement,
+					[FilePlugin.key]: MediaFileElement,
+					[ImagePlugin.key]: ImageElement,
+					[PlaceholderPlugin.key]: MediaPlaceholderElement,
+					[VideoPlugin.key]: MediaVideoElement,
 					[MediaEmbedPlugin.key]: MediaEmbedElement,
+					// end media components
 					[ParagraphPlugin.key]: ParagraphElement,
 					[TablePlugin.key]: TableElement,
 					[TableRowPlugin.key]: TableRowElement,

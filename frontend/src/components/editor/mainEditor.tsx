@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { cn } from "@udecode/cn";
 
 import { ParagraphPlugin, Plate } from "@udecode/plate-common/react";
@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from "@/rtk/store";
 import { updateUserProject } from "@/rtk/slices/currentUserProject";
 import CompletionPopover from "./completion/completionPopover";
 import { isEditorFocused } from "@udecode/slate-react";
+import { setprojectOpenedToolId } from "@/rtk/slices/projectOpenedTool";
 
 const initialvalue = [
 	{
@@ -34,6 +35,7 @@ export default function MainEditor({ className }: { className?: string }) {
 	const currentUserProject = useAppSelector(
 		(state) => state.currentUserProject
 	);
+	const currentTool = useAppSelector((state) => state.projectOpenedTool);
 	const [rewritePopoverVisaiblity, setRewritePopoverVisaiblity] =
 		useState(false);
 	const appDispatch = useAppDispatch();
@@ -41,39 +43,37 @@ export default function MainEditor({ className }: { className?: string }) {
 	const editor = useMemo(() => {
 		console.log("### rendering Editor..... ");
 		if (currentUserProject.value.article) {
-			return buildEditor(JSON.parse(currentUserProject.value.article));
+			return buildEditor(currentUserProject.value.article);
 		} else {
 			return buildEditor(initialvalue);
 		}
 	}, []);
 	const containerRef = useRef<HTMLDivElement>(null);
-	// const [value, setValue] = useState(initialvalue);
-	const saveArticle = () => {
-		let articleBody = JSON.stringify([...editor.children]);
-		// setCurrentText(serializeNodesToText(editor.children));
+	const saveArticle = useCallback(() => {
 		console.log("saving article...");
 		appDispatch(
 			updateUserProject({
-				projectBody: articleBody,
+				projectBody: editor.children,
 				projectId: currentUserProject.value.id,
 			})
 		);
-	};
+	}, []);
 
 	return (
 		<div className={`h-full w-full ${className}`}>
 			<DndProvider backend={HTML5Backend}>
 				<TooltipProvider>
 					<Plate
-						onChange={() => {
+						onChange={(e) => {
 							setRewritePopoverVisaiblity(false);
 							if (timer1) clearTimeout(timer1);
 							timer1 = setTimeout(() => {
 								setRewritePopoverVisaiblity(true);
-							}, 1000);
+								// if (currentUserProject.value.id) saveArticle();
+							}, 1500);
 						}}
 						onValueChange={(e) => {
-							console.log(e.editor.children);
+							// console.log(normalizeEditor(e.editor));
 							if (timer) clearTimeout(timer);
 							timer = setTimeout(() => {
 								if (currentUserProject.value.id) saveArticle();
@@ -84,24 +84,27 @@ export default function MainEditor({ className }: { className?: string }) {
 						<div
 							ref={containerRef}
 							className={cn(
-								`relative flex flex-col h-full  `,
+								`relative flex flex-col h-full overflow-hidden  `,
 								// Block selection
 								"[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4"
 							)}
 						>
-							<FixedToolbar>
+							<FixedToolbar className=" backdrop-blur-md bg-main shrink-0 overflow-hidden">
 								<FixedToolbarButtons />
 							</FixedToolbar>
 
 							<Editor
-								className="p-4 h-full overflow-x-hidden overflow-y-auto  border border-slate-300"
+								className="p-11 min-h-full  shadow-lg  bg-white"
 								focusRing={false}
 								variant="ghost"
+								onFocus={() =>
+									currentTool.id && appDispatch(setprojectOpenedToolId(0))
+								}
 								size="md"
 								// placeholder="Start writing..."
 							>
 								{rewritePopoverVisaiblity &&
-									editor.children.length > 2 &&
+									editor.string([0]).length > 1 &&
 									isEditorFocused(editor) && <CompletionPopover />}
 							</Editor>
 

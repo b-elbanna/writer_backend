@@ -5,7 +5,7 @@ import MainTitle from "@/components/mainTitle";
 import useUserDataFetcher from "@/swrDataFetcher/userDataFetcher";
 import useUserProjectsFetcher from "@/swrDataFetcher/userProjectsFetcher";
 import { ProjectsBox } from "./projects";
-import CustomModal from "@/components/customModal";
+import CreateProjectModal from "@/components/customModal/createProjectModal";
 import LogoHeader from "@/components/logoHeader";
 
 function ProjectsPage() {
@@ -43,7 +43,7 @@ function ProjectsPage() {
 			<section className="my-20 max-w-5xl mx-auto   ">
 				<div className="flex justify-between gap-12 container px-4 items-end  mx-auto mb-10">
 					<MainTitle title="Projects" />
-					<CustomModal />
+					<CreateProjectModal />
 				</div>
 				<div className="container px-4 m-auto ">
 					{isLoading ? (

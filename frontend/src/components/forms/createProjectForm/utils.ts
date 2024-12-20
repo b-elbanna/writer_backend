@@ -12,8 +12,8 @@ export function validateCreateArticleForm(
 	if (onChangeTimer) {
 		clearTimeout(onChangeTimer);
 	}
-	if (values?.title?.length > 30) {
-		errors.title = " |maximum  30 characters";
+	if (values?.title?.length > 200) {
+		errors.title = " |maximum  200 characters";
 	}
 	if (values?.title?.length < 3) {
 		errors.title = " |minimum  3 characters";

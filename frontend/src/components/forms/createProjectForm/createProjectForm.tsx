@@ -10,10 +10,11 @@ import TextInput from "../formFiels/textInputField";
 import FormButton from "../formFiels/formButton";
 import { CheckBoxContainer, CheckboxInput } from "../formFiels/checkBoxInput";
 import useUserProjectsFetcher from "@/swrDataFetcher/userProjectsFetcher";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import SelectionInput from "../formFiels/selectionInput";
-import { useAppDispatch } from "@/rtk/store";
+import { useAppDispatch, useAppSelector } from "@/rtk/store";
 import { createUserProject } from "@/rtk/slices/currentUserProject";
+import pagePaths from "@/urlPaths/pagePaths";
 
 export interface CreateProjectFormDataInterface {
 	title: string;
@@ -29,7 +30,7 @@ export default function CreateProjectForm() {
 	const [descriptionsData, setDescriptionsData] = useState([]);
 	const [checkboxVisibility, setCheckboxVisibility] = useState(false);
 	const [descriptionLoader, setDescriptionLoader] = useState(false);
-
+	const createdProject = useAppSelector((state) => state.currentUserProject);
 	const currentProject = useRef<CreateProjectFormDataInterface>({
 		title: "",
 		lang: "en",
@@ -65,27 +66,25 @@ export default function CreateProjectForm() {
 				await postCreateOutlineAction({
 					title: values.title,
 					discription: values?.descriptions.join(","),
-				})
-					.then(async (res) => {
-						appDispatch(
-							createUserProject({
-								project: {
-									title: values.title,
-									description: values?.descriptions.join(","),
-									name: values.name,
-									lang: values.lang,
-									outline: res.data?.outline,
-								},
-							})
+				}).then(async (res) => {
+					await appDispatch(
+						createUserProject({
+							project: {
+								title: values.title,
+								description: values?.descriptions.join(","),
+								name: values.name,
+								lang: values.lang,
+								outline: res.data?.outline,
+							},
+						})
+					).then((res) => {
+						console.log(res);
+						router.push(
+							pagePaths.appPage + "/" + (res.payload as ProjectInterface).id
 						);
-						// .then((res) => {
-						// 	console.log((res.payload as ProjectInterface).article);
-						// });
-						router.push(`editor`);
-					})
-					.catch((err) => {
-						console.log(err);
 					});
+				});
+
 				// setDescriptionLoader(false);
 			}
 		}

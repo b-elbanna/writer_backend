@@ -12,7 +12,13 @@ import {
 	FontColorPlugin,
 } from "@udecode/plate-font/react";
 import { ListStyleType } from "@udecode/plate-indent-list";
-import { ImagePlugin, MediaEmbedPlugin } from "@udecode/plate-media/react";
+import {
+	AudioPlugin,
+	FilePlugin,
+	ImagePlugin,
+	MediaEmbedPlugin,
+	VideoPlugin,
+} from "@udecode/plate-media/react";
 
 import { Icons, iconVariants } from "@/components/icons";
 import { AlignDropdownMenu } from "@/components/plate-ui/align-dropdown-menu";
@@ -34,23 +40,31 @@ import { ModeDropdownMenu } from "./mode-dropdown-menu";
 import { ToolbarGroup } from "./toolbar";
 import { TurnIntoDropdownMenu } from "./turn-into-dropdown-menu";
 import { CodeBlockToolbarButton } from "./code-bock-button";
+import { ExportToolbarButton } from "./export-toolbar-button";
+import { ArrowUpToLineIcon } from "lucide-react";
 
+// https://github.com/udecode/plate-playground-template/blob/main/src/components/plate-ui/fixed-toolbar-buttons.tsxhttps://github.com/udecode/plate-playground-template/blob/main/src/components/plate-ui/fixed-toolbar-buttons.tsx
 export function FixedToolbarButtons() {
 	const readOnly = useEditorReadOnly();
 
 	return (
-		<div className="w-full overflow-hidden">
+		<div className="w-full overflow-hidden overflow-x-auto p-1 ">
 			<div
-				className="flex flex-wrap justify-between"
+				className="flex flex-wrap justify-between "
 				style={{
 					transform: "translateX(calc(-1px))",
 				}}
 			>
 				{!readOnly && (
 					<>
-						<ToolbarGroup noSeparator>
+						<ToolbarGroup>
 							<InsertDropdownMenu />
 							<TurnIntoDropdownMenu />
+						</ToolbarGroup>
+						<ToolbarGroup>
+							<ExportToolbarButton>
+								<ArrowUpToLineIcon />
+							</ExportToolbarButton>
 						</ToolbarGroup>
 
 						<ToolbarGroup>
@@ -81,7 +95,7 @@ export function FixedToolbarButtons() {
 							</MarkToolbarButton>
 						</ToolbarGroup>
 
-						<ToolbarGroup noSeparator>
+						<ToolbarGroup>
 							<ColorDropdownMenu
 								nodeType={FontColorPlugin.key}
 								tooltip="Text Color"
@@ -96,32 +110,35 @@ export function FixedToolbarButtons() {
 							</ColorDropdownMenu>
 						</ToolbarGroup>
 
-						<ToolbarGroup noSeparator>
+						<ToolbarGroup>
 							<AlignDropdownMenu />
 
 							<LineHeightDropdownMenu />
 						</ToolbarGroup>
 
-						<ToolbarGroup noSeparator>
+						<ToolbarGroup>
 							<IndentListToolbarButton nodeType={ListStyleType.Disc} />
 							<IndentListToolbarButton nodeType={ListStyleType.Decimal} />
 
 							{/* <TodoListToolbarButton nodeType={TodoListPlugin.key} /> */}
 						</ToolbarGroup>
 
-						<ToolbarGroup noSeparator>
+						<ToolbarGroup>
 							<OutdentToolbarButton />
 							<IndentToolbarButton />
 						</ToolbarGroup>
 
-						<ToolbarGroup noSeparator>
+						<ToolbarGroup>
 							<CodeBlockToolbarButton />
 							<LinkToolbarButton />
-
-							<MediaToolbarButton nodeType={ImagePlugin.key} />
-							<MediaToolbarButton nodeType={MediaEmbedPlugin.key} />
 						</ToolbarGroup>
-						<ToolbarGroup noSeparator>
+						<ToolbarGroup>
+							<MediaToolbarButton nodeType={ImagePlugin.key} />
+							<MediaToolbarButton nodeType={VideoPlugin.key} />
+							<MediaToolbarButton nodeType={AudioPlugin.key} />
+							<MediaToolbarButton nodeType={FilePlugin.key} />
+						</ToolbarGroup>
+						<ToolbarGroup>
 							<TableDropdownMenu />
 
 							<EmojiDropdownMenu />
@@ -132,7 +149,7 @@ export function FixedToolbarButtons() {
 				)}
 
 				<div className="grow" />
-				<ToolbarGroup noSeparator>
+				<ToolbarGroup>
 					<ModeDropdownMenu />
 				</ToolbarGroup>
 			</div>

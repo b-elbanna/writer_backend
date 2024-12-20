@@ -10,7 +10,7 @@ import { cva } from "class-variance-authority";
 const editorVariants = cva(
 	cn(
 		"relative overflow-x-auto whitespace-pre-wrap break-words",
-		"min-h-[80px] w-full rounded-md bg-background px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none",
+		"min-h-[80px] w-full  px-6 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none",
 		"[&_[data-slate-placeholder]]:text-muted-foreground [&_[data-slate-placeholder]]:!opacity-100",
 		"[&_[data-slate-placeholder]]:top-[auto_!important]",
 		"[&_strong]:font-bold"
@@ -65,8 +65,13 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 		return (
 			<div
 				ref={ref}
-				className="relative overflow-x-hidden overflow-y-auto w-full flex-1 grid"
+				// style={{ outline: "none" ,
+				// 	maxHeight:
+				// }}
+				className="relative bg-main grow overflow-y-auto shadow[inset_0_5px_15px_-3px_rgba(0,0,0,0.1)] p-4 py-28 pb-44 sm:px-6 md:px-8 lg:px-10 w-full "
 			>
+				{children}
+
 				<PlateContent
 					className={cn(
 						editorVariants({
@@ -84,7 +89,6 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 					disableDefaultStyles
 					{...props}
 				/>
-				{children}
 			</div>
 		);
 	}

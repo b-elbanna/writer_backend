@@ -1,14 +1,9 @@
-"use client";
-
-import authProtection from "@/auth/authProtection";
 import MainEditor from "@/components/editor/mainEditor";
 
-function EditorPage() {
+export default function EditorPage() {
 	return (
-		<div className=" w-full h-screen p-10 bg-primary">
-			<MainEditor className="overflow-hidden" />
-		</div>
+		<main className=" w-full h-screen overflow-hidden p-10  ">
+			<MainEditor className="overflow-hidden rounded border-4 border-primary" />
+		</main>
 	);
 }
-
-export default authProtection(EditorPage);

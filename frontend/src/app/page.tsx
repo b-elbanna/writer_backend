@@ -1,6 +1,7 @@
 "use client";
 import { CustomButton } from "@/components/forms/formFiels/customButton";
 import MainLogo from "@/components/mainLogo";
+import pagePaths from "@/urlPaths/pagePaths";
 import { useRouter } from "next/navigation";
 
 export default function HeroSection() {
@@ -26,7 +27,7 @@ export default function HeroSection() {
 							</span>
 						</div>
 						<CustomButton
-							onClickFunc={() => router.push("/projects")}
+							onClickFunc={() => router.push(pagePaths.projectsPage)}
 							children="GO Now"
 							className="mt-12 !p-2 !px-3  mx-auto !block !tracking-[2px]"
 						/>

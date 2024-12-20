@@ -1,5 +1,4 @@
 import { clientApi } from "@/baseApis/axiosBase";
-import { CreateProjectFormDataInterface } from "@/components/forms/createProjectForm/createProjectForm";
 
 interface Values {
 	title: string;

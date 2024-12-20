@@ -1,10 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import currentUserProject from "./slices/currentUserProject";
+import papersSearchData from "./slices/papersSearch";
+import projectOpenedTool from "./slices/projectOpenedTool";
+import currentUserChatbox from "./slices/currentUserChat";
 
 export const makeStore = () => {
 	return configureStore({
-		reducer: { currentUserProject },
+		reducer: {
+			currentUserProject,
+			papersSearchData,
+			projectOpenedTool,
+			currentUserChatbox,
+		},
 	});
 };
 

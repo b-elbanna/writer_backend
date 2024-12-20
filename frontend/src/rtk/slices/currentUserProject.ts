@@ -1,6 +1,9 @@
 import { clientApi } from "@/baseApis/axiosBase";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-
+import { Node } from "slate";
+const serializeNodesToText = (nodes: any) => {
+	return nodes.map((n: any) => Node.string(n)).join("\n");
+};
 export interface CurrentUserProject {
 	value: ProjectInterface;
 	status:
@@ -21,7 +24,7 @@ export interface DeleteCurrentUserProjectParams
 
 export interface UpdateUserProjectParams {
 	projectId: string;
-	projectBody: string;
+	projectBody: any;
 }
 
 export interface CreateUserProjectParams {
@@ -38,8 +41,11 @@ export const getCurrentUserProject = createAsyncThunk(
 	"currentUserArticle/getCurrentUserArticle",
 	async ({ projectId }: GetCurrentUserProjectParams) => {
 		const response = await clientApi.get(`/writing/project/${projectId}`);
-		console.log(response);
-		return response.data as ProjectInterface;
+		let newProject: ProjectInterface = response.data;
+		// newProject.article_text = serializeNodesToText(
+		// 	JSON.parse(newProject.article || "[{text:''}]")
+		// );
+		return newProject;
 	}
 );
 
@@ -47,8 +53,15 @@ export const createUserProject = createAsyncThunk(
 	"currentUserArticle/createUserArticle",
 	async ({ project }: CreateUserProjectParams) => {
 		const response = await clientApi.post(`/writing/projects`, project);
-		// console.log(response);
-		return response.data as ProjectInterface;
+		let newProject: ProjectInterface = response.data;
+		const qaRes = await clientApi.post(`qa/qa-boxes`, {
+			name: newProject.name,
+			project: newProject.id,
+		});
+		let projectQABox: QABoxInterface = qaRes.data;
+		newProject.qaBox = projectQABox.id;
+		newProject.article_text = serializeNodesToText(newProject.article);
+		return newProject;
 	}
 );
 export const updateUserProject = createAsyncThunk(
@@ -56,15 +69,20 @@ export const updateUserProject = createAsyncThunk(
 	async ({ projectId, projectBody }: UpdateUserProjectParams) => {
 		const response = await clientApi.patch(`/writing/project/${projectId}`, {
 			article: projectBody,
+			article_text: serializeNodesToText(projectBody),
 		});
-		return response.data as ProjectInterface;
+		let newProject: ProjectInterface = response.data;
+		// newProject.article_text = serializeNodesToText(
+		// 	JSON.parse(newProject.article || "[{text:''}]")
+		// );
+		return newProject;
 	}
 );
 
 export const deleteCurrentUserProject = createAsyncThunk(
 	"currentUserArticle/deleteCurrentUserArticle",
 	async ({ projectId }: DeleteCurrentUserProjectParams) => {
-		await clientApi.delete(`/writing/project/${projectId}`);
+		const response = await clientApi.delete(`/writing/project/${projectId}`);
 		return {};
 	}
 );
@@ -79,8 +97,10 @@ const currentUserProject = createSlice({
 	initialState,
 	reducers: {
 		resetCurrentUserProject: (state, action) => {
-			state.value = action.payload;
-			return state;
+			if (action.payload) {
+				state.value = action.payload;
+				return state;
+			} else return initialState;
 		},
 	},
 	extraReducers: (builder) => {
@@ -104,7 +124,7 @@ const currentUserProject = createSlice({
 		builder.addCase(createUserProject.fulfilled, (state, action) => {
 			state.status = "fulfilled";
 			state.value = action.payload;
-			console.log(state.value);
+			// console.log(state.value);
 			return state as CurrentUserProject;
 		});
 		builder.addCase(createUserProject.pending, (state, action) => {
