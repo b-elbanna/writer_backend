@@ -25,8 +25,10 @@ export default function SingleResourceUploader({
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files?.length) {
 			setFile(e.target.files[0]);
-			setStatus("reading");
-			e.target.files[0].type === "application/pdf" &&
+			const isPdf = e.target.files[0].type === "application/pdf";
+			isPdf && setStatus("reading");
+
+			isPdf &&
 				pdfToText(e.target.files[0])
 					.then((text) => {
 						let abstract: string = "";
@@ -81,7 +83,7 @@ export default function SingleResourceUploader({
 	};
 	return (
 		<div>
-			<div className="input-group mx-auto max-w-[500px] flex border-4 bg-main rounded border-primary p-2">
+			<div className="input-group mx-auto max-w-[500px] flex border-4 bg-white rounded border-primary p-2">
 				<input
 					ref={inputFileRef}
 					className="hidden"
@@ -119,8 +121,8 @@ export default function SingleResourceUploader({
 			{file && (
 				<div className="max-w-2xl mx-auto my-5">
 					<section>
-						<p className=" font-bold">File details:</p>
-						<ul className="px-4 max-h-56 overflow-y-auto">
+						<p className=" font-bold text-xl">File details:</p>
+						<ul className="px-4  flex gap-2 flex-wrap ">
 							<li>
 								<span className="font-bold">Name: </span>
 								{file.name}
@@ -131,15 +133,15 @@ export default function SingleResourceUploader({
 							<li>
 								<span className="font-bold">Size:</span> {file.size} bytes
 							</li>
-							{abstract && status !== "reading" ? (
-								<li>
-									<span className="font-bold">Abstract:</span>
-
-									{abstract}
+							{abstract && (
+								<li className=" basis-full">
+									<span className="font-bold">Pdf Content:</span>
+									<div className="p-2 bg-main border-4 border-primary rounded-[8px] max-h-56 overflow-y-auto">
+										{abstract}
+									</div>
 								</li>
-							) : (
-								<p>⏳ Reading selected file...</p>
 							)}
+							{status === "reading" && <p>⏳ Reading selected file...</p>}
 						</ul>
 					</section>
 
