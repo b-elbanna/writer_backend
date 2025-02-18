@@ -3,7 +3,6 @@ import {
 	EditIcon,
 	FilePlus2Icon,
 	FileQuestionIcon,
-	Icon,
 } from "lucide-react";
 
 const writtingToolsData: {
@@ -19,17 +18,18 @@ const writtingToolsData: {
 		description: "chat with latest AI models",
 		Icon: BotIcon,
 	},
+
 	{
 		id: 2,
-		name: "qabox",
-		description: "search for answers in your resources",
-		Icon: FileQuestionIcon,
-	},
-	{
-		id: 3,
 		name: "resources",
 		description: "search for papers",
 		Icon: FilePlus2Icon,
+	},
+	{
+		id: 3,
+		name: "qabox",
+		description: "search for answers in your resources",
+		Icon: FileQuestionIcon,
 	},
 ];
 

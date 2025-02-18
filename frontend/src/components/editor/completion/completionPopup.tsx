@@ -1,6 +1,7 @@
 import { forwardRef, MouseEventHandler } from "react";
-import { useEditorRef } from "@udecode/plate-common/react";
+import { useEditorRef } from "@udecode/plate/react";
 import { EditIcon, ListFilter, ListPlusIcon } from "lucide-react";
+import SmileFaceLoader from "@/loaders/smileFace/smileFace";
 
 export const CompletionPopup = forwardRef<
 	HTMLDivElement,
@@ -10,32 +11,40 @@ export const CompletionPopup = forwardRef<
 
 	const handleOnClick: MouseEventHandler = (e) => {
 		e.preventDefault();
-		editor.insertText(props.completionText);
-		// editor.setSelection({});
-		props.closePopup();
+		if (props.completionText) {
+			const startPoints = editor.selection?.anchor;
+			editor.tf.select(editor.selection?.anchor);
+			editor.tf.insertText(props.completionText);
+			const endPoints = editor.selection?.focus;
+			startPoints &&
+				endPoints &&
+				editor.tf.select({ anchor: startPoints, focus: endPoints });
+			props.closePopup();
+		}
 	};
-	return props.completionText ? (
+	return (
 		<div
 			ref={ref}
 			onMouseDown={(e) => e.preventDefault()}
-			onClick={handleOnClick}
 			className={`${
-				props.completionText && "hover:underline"
-			}  w-52 translate-y-[8px] cursor-pointer text-sm items-center z-50 font-semibold text-main max-h-[100px] shadow-xl overflow-hidden opacity-1 absolute`}
+				props.completionText && "hover:underline "
+			}  w-52 -mb-1  text-sm items-center bg-transparent z-50 font-semibold text-main pointer-events-none  overflow-hidden opacity-1 absolute`}
 		>
-			<button className="bg-white  border-s-[3px] border-action ">
+			<div className="p-2  bg-primary max-h-[100px] shadow-xl rounded overflow-y-auto overflow-x-hidden ">
+				{props.completionText ? (
+					<p>{props.completionText}</p>
+				) : (
+					<div className="flex justify-center items-center">
+						<SmileFaceLoader className=" !w-[50px] !h-[50px]" />
+					</div>
+				)}
+			</div>
+			<button
+				onClick={handleOnClick}
+				className="cursor-pointer mt-2 pointer-events-auto -mb-1 bg-white shadow-md  border-s-[3px] border-action "
+			>
 				<ListPlusIcon size={22} className="text-active" />
 			</button>{" "}
-			<p className="p-2 -mt-1 bg-primary rounded overflow-y-auto overflow-x-hidden ">
-				{props.completionText}
-			</p>
-		</div>
-	) : (
-		<div
-			ref={ref}
-			className={` ps-1 border-s-[3px] border-action text-xl font-bold text-main w-52  py-1 bg-primary  shadow-lg opacity-1 absolute`}
-		>
-			laoding...
 		</div>
 	);
 });

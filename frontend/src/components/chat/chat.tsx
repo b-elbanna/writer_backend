@@ -26,7 +26,6 @@ export default function Chat({
 			shouldReconnect: (closeEvent) =>
 				currentUserProject.value.chatbox?.length > 0,
 		});
-
 	useEffect(() => {
 		if (ref.current) {
 			ref.current.scrollTop = ref.current.scrollHeight;

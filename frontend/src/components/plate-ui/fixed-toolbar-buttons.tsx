@@ -6,24 +6,26 @@ import {
 	StrikethroughPlugin,
 	UnderlinePlugin,
 } from "@udecode/plate-basic-marks/react";
-import { useEditorReadOnly } from "@udecode/plate-common/react";
+import { useEditorReadOnly } from "@udecode/plate/react";
 import {
 	FontBackgroundColorPlugin,
 	FontColorPlugin,
 } from "@udecode/plate-font/react";
-import { ListStyleType } from "@udecode/plate-indent-list";
 import {
 	AudioPlugin,
 	FilePlugin,
 	ImagePlugin,
-	MediaEmbedPlugin,
+	// MediaEmbedPlugin,
 	VideoPlugin,
 } from "@udecode/plate-media/react";
 
-import { Icons, iconVariants } from "@/components/icons";
+import { Icons } from "@/components/icons";
 import { AlignDropdownMenu } from "@/components/plate-ui/align-dropdown-menu";
 import { EmojiDropdownMenu } from "@/components/plate-ui/emoji-dropdown-menu";
-import { IndentListToolbarButton } from "@/components/plate-ui/indent-list-toolbar-button";
+import {
+	BulletedIndentListToolbarButton,
+	NumberedIndentListToolbarButton,
+} from "@/components/plate-ui/indent-list-toolbar-button";
 import { IndentToolbarButton } from "@/components/plate-ui/indent-toolbar-button";
 
 import { LineHeightDropdownMenu } from "@/components/plate-ui/line-height-dropdown-menu";
@@ -41,7 +43,26 @@ import { ToolbarGroup } from "./toolbar";
 import { TurnIntoDropdownMenu } from "./turn-into-dropdown-menu";
 import { CodeBlockToolbarButton } from "./code-bock-button";
 import { ExportToolbarButton } from "./export-toolbar-button";
-import { ArrowUpToLineIcon } from "lucide-react";
+import {
+	ArrowUpToLineIcon,
+	BaselineIcon,
+	Code2Icon,
+	HighlighterIcon,
+	PaintBucketIcon,
+} from "lucide-react";
+import { RedoToolbarButton, UndoToolbarButton } from "./history-toolbar-button";
+import { FontSizeToolbarButton } from "./font-size-toolbar-button";
+import { IndentTodoToolbarButton } from "./indent-todo-toolbar-button";
+import { ToggleToolbarButton } from "./toggle-toolbar-button";
+import { TodoListToolbarButton } from "./todo-list-toolbar-button";
+import { HighlightPlugin } from "@udecode/plate-highlight/react";
+import { ListToolbarButton } from "./list-toolbar-button";
+import {
+	BulletedListPlugin,
+	NumberedListPlugin,
+	TodoListPlugin,
+} from "@udecode/plate-list/react";
+import { ImportToolbarButton } from "./import-toolbar-button";
 
 // https://github.com/udecode/plate-playground-template/blob/main/src/components/plate-ui/fixed-toolbar-buttons.tsxhttps://github.com/udecode/plate-playground-template/blob/main/src/components/plate-ui/fixed-toolbar-buttons.tsx
 export function FixedToolbarButtons() {
@@ -58,13 +79,21 @@ export function FixedToolbarButtons() {
 				{!readOnly && (
 					<>
 						<ToolbarGroup>
-							<InsertDropdownMenu />
-							<TurnIntoDropdownMenu />
+							<UndoToolbarButton />
+							<RedoToolbarButton />
 						</ToolbarGroup>
+
 						<ToolbarGroup>
 							<ExportToolbarButton>
 								<ArrowUpToLineIcon />
 							</ExportToolbarButton>
+							<ImportToolbarButton />
+						</ToolbarGroup>
+
+						<ToolbarGroup>
+							<InsertDropdownMenu />
+							<TurnIntoDropdownMenu />
+							<FontSizeToolbarButton />
 						</ToolbarGroup>
 
 						<ToolbarGroup>
@@ -91,39 +120,48 @@ export function FixedToolbarButtons() {
 								<Icons.strikethrough />
 							</MarkToolbarButton>
 							<MarkToolbarButton nodeType={CodePlugin.key} tooltip="Code (⌘+E)">
-								<Icons.code />
+								<Code2Icon />
 							</MarkToolbarButton>
-						</ToolbarGroup>
-
-						<ToolbarGroup>
+							{/* color */}
 							<ColorDropdownMenu
 								nodeType={FontColorPlugin.key}
-								tooltip="Text Color"
+								tooltip="Text color"
 							>
-								<Icons.color className={iconVariants({ variant: "toolbar" })} />
+								<BaselineIcon />
 							</ColorDropdownMenu>
 							<ColorDropdownMenu
 								nodeType={FontBackgroundColorPlugin.key}
-								tooltip="Highlight Color"
+								tooltip="Background color"
 							>
-								<Icons.bg className={iconVariants({ variant: "toolbar" })} />
+								<PaintBucketIcon />
 							</ColorDropdownMenu>
 						</ToolbarGroup>
 
 						<ToolbarGroup>
 							<AlignDropdownMenu />
 
-							<LineHeightDropdownMenu />
+							<NumberedIndentListToolbarButton />
+							<BulletedIndentListToolbarButton />
+							<IndentTodoToolbarButton />
+							<ToggleToolbarButton />
 						</ToolbarGroup>
 
-						<ToolbarGroup>
+						{/* <ToolbarGroup>
+							<AlignDropdownMenu />
+							<ListToolbarButton nodeType={BulletedListPlugin.key} />
+							<ListToolbarButton nodeType={NumberedListPlugin.key} />
+							<ListToolbarButton nodeType={TodoListPlugin.key} />
+							<ToggleToolbarButton />
+						</ToolbarGroup> */}
+
+						{/* <ToolbarGroup>
 							<IndentListToolbarButton nodeType={ListStyleType.Disc} />
 							<IndentListToolbarButton nodeType={ListStyleType.Decimal} />
 
-							{/* <TodoListToolbarButton nodeType={TodoListPlugin.key} /> */}
-						</ToolbarGroup>
+						</ToolbarGroup> */}
 
 						<ToolbarGroup>
+							<LineHeightDropdownMenu />
 							<OutdentToolbarButton />
 							<IndentToolbarButton />
 						</ToolbarGroup>
@@ -131,24 +169,31 @@ export function FixedToolbarButtons() {
 						<ToolbarGroup>
 							<CodeBlockToolbarButton />
 							<LinkToolbarButton />
+							<TableDropdownMenu />
+							<EmojiDropdownMenu />
 						</ToolbarGroup>
+
 						<ToolbarGroup>
 							<MediaToolbarButton nodeType={ImagePlugin.key} />
 							<MediaToolbarButton nodeType={VideoPlugin.key} />
 							<MediaToolbarButton nodeType={AudioPlugin.key} />
 							<MediaToolbarButton nodeType={FilePlugin.key} />
 						</ToolbarGroup>
+
 						<ToolbarGroup>
-							<TableDropdownMenu />
-
-							<EmojiDropdownMenu />
-
 							<MoreDropdownMenu />
 						</ToolbarGroup>
 					</>
 				)}
 
 				<div className="grow" />
+				<ToolbarGroup>
+					<MarkToolbarButton nodeType={HighlightPlugin.key} tooltip="Highlight">
+						<HighlighterIcon />
+					</MarkToolbarButton>
+					{/* <CommentToolbarButton /> */}
+				</ToolbarGroup>
+
 				<ToolbarGroup>
 					<ModeDropdownMenu />
 				</ToolbarGroup>

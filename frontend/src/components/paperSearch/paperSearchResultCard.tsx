@@ -32,15 +32,16 @@ function PaperInfo({
 	return (
 		<div className=" justify-between flex flex-wrap gap-1 py-2">
 			<div className="paper-buttons flex gap-1 ">
-				<button
-					className="text-active "
-					onClick={async () => {
-						window.open(pdfUrl || createdPdfUrl, "_blank");
-					}}
-				>
-					<FileTextIcon width={25} height={25} strokeWidth={2} />
-				</button>
-
+				{(pdfUrl || createdPdfUrl) && (
+					<button
+						className="text-active "
+						onClick={async () => {
+							window.open(pdfUrl || createdPdfUrl, "_blank");
+						}}
+					>
+						<FileTextIcon width={25} height={25} strokeWidth={2} />
+					</button>
+				)}
 				<div className="h-full border-l-4 border-primary "></div>
 				{url && (
 					<button

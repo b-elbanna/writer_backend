@@ -92,8 +92,8 @@ export const papersSearchData = createSlice({
 	name: "papersSearchData",
 	initialState,
 	reducers: {
-		resetPapersSearchData: (state, action) => {
-			state.value = action.payload;
+		resetPapersSearchData: (state) => {
+			state.value = [];
 			return state;
 		},
 	},

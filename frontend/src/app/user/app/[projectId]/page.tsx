@@ -8,26 +8,27 @@ import { uuidRegex } from "@/regex/uuid";
 import { notFound } from "next/navigation";
 import MainEditor from "@/components/editor/mainEditor";
 import { getCurrentUserChatbox } from "@/rtk/slices/currentUserChat";
-import FuctionBar from "./mainPage/fuctionBar";
+import FuctionBar from "../../../../components/functionBar/fuctionBar";
+import { useScrollLock, useWindowSize } from "usehooks-ts";
 
 function ProjectPage({ params }: { params: any }) {
 	const { projectId } = params;
+	const windowSize = useWindowSize();
+	const appDispatch = useAppDispatch();
 	const currentProject = useAppSelector((state) => state.currentUserProject);
 	const currentChat = useAppSelector((state) => state.currentUserChatbox);
-	const appDispatch = useAppDispatch();
+	useScrollLock();
 	useEffect(() => {
 		if (projectId) {
 			// if came from project page and an project already loaded
-			if (currentProject.value?.id) {
-				if (currentProject.value?.id === projectId) {
-					// if the project already loaded and the chatbox is empty
-					if (currentChat.status === "init")
-						appDispatch(
-							getCurrentUserChatbox({
-								chatboxId: currentProject.value.chatbox,
-							})
-						);
-				}
+			if (currentProject.value?.id === projectId) {
+				// if the project already loaded and the chatbox is empty
+				if (currentChat.status === "init")
+					appDispatch(
+						getCurrentUserChatbox({
+							chatboxId: currentProject.value.chatbox,
+						})
+					);
 			}
 			// if came from direct link
 			else {
@@ -43,7 +44,7 @@ function ProjectPage({ params }: { params: any }) {
 				});
 			}
 		}
-	}, []);
+	}, [projectId]);
 
 	if (!uuidRegex.test(projectId)) return notFound();
 	if (currentProject.status === "rejected") {
@@ -62,9 +63,12 @@ function ProjectPage({ params }: { params: any }) {
 		return <Loading />;
 
 	return (
-		<div className=" w-full overflow-hidden h-screen ">
-			<main className=" w-full h-full overflow-hidden relative    ">
-				<MainEditor className="overflow-hidden " />
+		<div
+			style={{ height: windowSize.height }}
+			className=" w-full overflow-hidden  "
+		>
+			<main className=" flex flex-col w-full h-full overflow-hidden relative    ">
+				<MainEditor className="overflow-hidden flex-1 " />
 				<FuctionBar />
 			</main>
 		</div>

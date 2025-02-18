@@ -4,14 +4,29 @@ import currentUserProject from "./slices/currentUserProject";
 import papersSearchData from "./slices/papersSearch";
 import projectOpenedTool from "./slices/projectOpenedTool";
 import currentUserChatbox from "./slices/currentUserChat";
+import isActiveResources from "./slices/isActiveResources";
+import archiveSearchData from "./slices/articleResources/archiveSearch";
+import arxivSearchData from "./slices/articleResources/arxivSearch";
+import EPMCSearchData from "./slices/articleResources/EPMCSearch";
+import synthicalSearchData from "./slices/articleResources/synthicalSearch";
+import scopusSearchData from "./slices/articleResources/scopusSearch";
+import springerSearchData from "./slices/articleResources/springerSearch";
 
 export const makeStore = () => {
 	return configureStore({
 		reducer: {
 			currentUserProject,
-			papersSearchData,
 			projectOpenedTool,
 			currentUserChatbox,
+			isActiveResources,
+			// article resources
+			papersSearchData,
+			archiveSearchData,
+			arxivSearchData,
+			EPMCSearchData,
+			synthicalSearchData,
+			scopusSearchData,
+			springerSearchData,
 		},
 	});
 };

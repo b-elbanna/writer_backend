@@ -1,10 +1,17 @@
 "use client";
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, {
+	Fragment,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 import UserMessage from "./UserMessage";
 import AssistantMessage from "./AssistantMessage";
 import { LastMessageContext } from "./MessagesProvider";
 import { useAppDispatch, useAppSelector } from "@/rtk/store";
 import { addChatMessage } from "@/rtk/slices/currentUserChat";
+import RawAssistantMessage from "./RawAssistantMessage";
 
 type ChatBodyProps = {
 	// chatMessages: ChatMessageInterface[];
@@ -15,40 +22,62 @@ type ChatBodyProps = {
 		finish_reason: "stop" | "length" | "content_filter" | null;
 	};
 };
-
+let interval: NodeJS.Timeout | undefined;
 export default function ChatBody({
 	body,
 	chatId,
 	lastSocketMessage,
 }: ChatBodyProps) {
 	const [currentMessage, setCurrentMessage] = useContext(LastMessageContext);
-
 	const currentChatbox = useAppSelector((state) => state.currentUserChatbox);
 	const appDispatch = useAppDispatch();
-
+	console.log("currentMessage", currentChatbox.chatbox.messages);
 	useEffect(() => {
 		if (lastSocketMessage && currentMessage) {
-			if (lastSocketMessage.content) {
+			console.log(lastSocketMessage);
+			if (lastSocketMessage.finish_reason) {
 				setCurrentMessage({
 					...currentMessage,
-					assistant_msg:
-						currentMessage.assistant_msg + lastSocketMessage.content,
+					finish_reason: lastSocketMessage.finish_reason,
 				});
 			}
+			if (lastSocketMessage.content) {
+				setCurrentMessage((prev) => {
+					if (prev) {
+						return {
+							...prev,
+							finish_reason: lastSocketMessage.finish_reason || undefined,
+							assistant_msg:
+								currentMessage.assistant_msg + lastSocketMessage.content,
+						};
+					}
+					return prev;
+				});
+			}
+
 			if (lastSocketMessage.finish_reason == "stop") {
-				appDispatch(addChatMessage(currentMessage));
+				appDispatch(
+					addChatMessage({ ...currentMessage, finish_reason: "stop" })
+				);
 				setCurrentMessage(undefined);
 			}
 		}
 	}, [lastSocketMessage]);
 
 	useEffect(() => {
-		body.current?.scrollTo(0, body.current.scrollHeight);
-	}, [currentMessage, currentChatbox.status]);
+		if (
+			body.current &&
+			body.current?.scrollHeight - body.current?.scrollTop >
+				body.current?.clientHeight + 100
+		) {
+			body.current?.scrollTo(0, body.current.scrollHeight);
+			console.log("scrolling");
+		}
+	}, [currentMessage]);
 	return (
 		<div
 			ref={body}
-			className=" flex-1 h-full scroll-smooth w-full mx-auto overflow-x-hidden  overflow-y-auto px-5 "
+			className=" flex-1 h-full w-full mx-auto overflow-x-hidden  overflow-y-auto px-5 "
 		>
 			{currentChatbox.chatbox.messages &&
 				currentChatbox.chatbox.messages.map((message, index: number) => {
@@ -91,7 +120,7 @@ export default function ChatBody({
 							voice_message: currentMessage.voice_message,
 						}}
 					/>
-					<AssistantMessage
+					<RawAssistantMessage
 						key={currentMessage.id + Math.random()}
 						message={{
 							id: currentMessage.id,
@@ -104,7 +133,7 @@ export default function ChatBody({
 					/>
 				</>
 			)}
-			<div className=" h-[90px]"></div>
+			<div className=" h-[150px]"></div>
 		</div>
 	);
 }

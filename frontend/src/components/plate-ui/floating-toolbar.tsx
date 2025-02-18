@@ -1,77 +1,77 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 
-import { cn, withRef } from '@udecode/cn';
+import { cn, withRef } from "@udecode/cn";
 import {
-  PortalBody,
-  useComposedRef,
-  useEditorId,
-  useEventEditorSelectors,
-} from '@udecode/plate-common/react';
+	PortalBody,
+	useComposedRef,
+	useEditorId,
+	useEventEditorSelectors,
+} from "@udecode/plate/react";
 import {
-  type FloatingToolbarState,
-  flip,
-  offset,
-  useFloatingToolbar,
-  useFloatingToolbarState,
-} from '@udecode/plate-floating';
+	type FloatingToolbarState,
+	flip,
+	offset,
+	useFloatingToolbar,
+	useFloatingToolbarState,
+} from "@udecode/plate-floating";
 
-import { Toolbar } from './toolbar';
+import { Toolbar } from "./toolbar";
 
 export const FloatingToolbar = withRef<
-  typeof Toolbar,
-  {
-    state?: FloatingToolbarState;
-  }
+	typeof Toolbar,
+	{
+		state?: FloatingToolbarState;
+	}
 >(({ children, state, ...props }, componentRef) => {
-  const editorId = useEditorId();
-  const focusedEditorId = useEventEditorSelectors.focus();
+	const editorId = useEditorId();
+	const focusedEditorId = useEventEditorSelectors.focus();
 
-  const floatingToolbarState = useFloatingToolbarState({
-    editorId,
-    focusedEditorId,
-    ...state,
-    floatingOptions: {
-      middleware: [
-        offset(12),
-        flip({
-          fallbackPlacements: [
-            'top-start',
-            'top-end',
-            'bottom-start',
-            'bottom-end',
-          ],
-          padding: 12,
-        }),
-      ],
-      placement: 'top',
-      ...state?.floatingOptions,
-    },
-  });
+	const floatingToolbarState = useFloatingToolbarState({
+		editorId,
+		focusedEditorId,
+		...state,
+		floatingOptions: {
+			middleware: [
+				offset(12),
+				flip({
+					fallbackPlacements: [
+						"top-start",
+						"top-end",
+						"bottom-start",
+						"bottom-end",
+					],
+					padding: 12,
+				}),
+			],
+			placement: "top",
+			...state?.floatingOptions,
+		},
+	});
 
-  const {
-    hidden,
-    props: rootProps,
-    ref: floatingRef,
-  } = useFloatingToolbar(floatingToolbarState);
+	const {
+		hidden,
+		props: rootProps,
+		ref: floatingRef,
+	} = useFloatingToolbar(floatingToolbarState);
 
-  const ref = useComposedRef<HTMLDivElement>(componentRef, floatingRef);
+	const ref = useComposedRef<HTMLDivElement>(componentRef, floatingRef);
 
-  if (hidden) return null;
+	if (hidden) return null;
 
-  return (
-    <PortalBody>
-      <Toolbar
-        ref={ref}
-        className={cn(
-          'absolute z-50 whitespace-nowrap border bg-popover px-1 opacity-100 shadow-md print:hidden'
-        )}
-        {...rootProps}
-        {...props}
-      >
-        {children}
-      </Toolbar>
-    </PortalBody>
-  );
+	return (
+		<PortalBody>
+			<Toolbar
+				ref={ref}
+				className={cn(
+					"absolute z-50 whitespace-nowrap border bg-popover px-1 opacity-100 shadow-md print:hidden"
+				)}
+				{...rootProps}
+				{...props}
+			>
+				{children}
+			</Toolbar>
+		</PortalBody>
+	);
 });

@@ -11,7 +11,7 @@ export default function SelectionInput({
 	options: ReactNode;
 }) {
 	return (
-		<div className="relative mb-4">
+		<div className="relative ">
 			<Field name={name}>
 				{({ input, meta }) => (
 					<>
@@ -27,7 +27,7 @@ export default function SelectionInput({
 								"top-[-23px] text-active !text-base"
 							} ${
 								meta.error && (meta.touched || meta.modified) && "!text-red-500"
-							}   peer-focus:top-[-23px] peer-focus:text-secondary peer-focus:!text-base  text-lg  pointer-events-none duration-500 absolute top-0 left-0 py-[10px]`}
+							}   peer-focus:top-[-23px] peer-focus:text-active peer-focus:!text-base   pointer-events-none duration-500 absolute top-0 left-0 py-[10px]`}
 						>
 							{label}
 							{meta.error && (meta.touched || meta.modified) && meta.error}

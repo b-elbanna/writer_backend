@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useEditorState } from "@udecode/plate-common/react";
+import { useEditorState } from "@udecode/plate/react";
 
 import { CompletionPopup } from "./completionPopup";
 import { CompletionBtn } from "./completionBtn";
@@ -32,31 +32,40 @@ export default function CompletionPopover() {
 					const editorEl = popupEL.parentElement;
 					const editorRect = editorEl?.getBoundingClientRect();
 
-					// make the popup height equal to the selection height
-					if (
-						rect &&
-						popupEL.clientHeight < rect.height &&
-						popupEL.classList.contains("popover_content")
-					) {
-						popupEL.style.height = `${rect.height}px`;
-						let font = rect.height < 30 ? rect.height - 12 : rect.height - 15;
+					// if (
+					// 	rect &&
+					// 	popupEL.clientHeight < rect.height &&
+					// 	popupEL.classList.contains("popover_content")
+					// ) {
+					// 	// make the btn height equal to the selection height
+					// 	popupEL.style.height = `${rect.height}px`;
+					// 	let font = rect.height < 30 ? rect.height - 12 : rect.height - 18;
 
-						popupEL.style.fontSize = `${font}px`;
-					}
+					// 	popupEL.style.fontSize = `${font}px`;
+					// }
 					if (editorRect && rect && editorEl) {
 						x = rect.left - editorRect.left;
-						y = rect.top - editorRect.top + editorEl?.scrollTop;
+						y = rect.bottom - editorRect.top + editorEl?.scrollTop;
 
+						// if the popup is going out of the editor horizontally
 						if (x > editorRect.width - popupEL.clientWidth - 56) {
-							popoverPosition.top = y + rect.height;
-							popupEL.style.top = `${popoverPosition.top}px`;
+							popoverPosition.top = y;
+							popupEL.style.bottom = `${
+								editorEl.clientHeight - popoverPosition.top
+							}px`;
 							popupEL.style.right = `${56}px`;
 						} else {
-							popoverPosition.top =
-								y - popupEL.clientHeight / 2 + rect.height / 2;
+							// to get the popup position in the middle of the caret vertically
+							// popoverPosition.top =
+							// 	y - popupEL.clientHeight / 2 + rect.height / 2;
+
+							popoverPosition.top = y;
 
 							popoverPosition.left = x + rect.width / 2;
-							popupEL.style.top = `${popoverPosition.top}px`;
+
+							popupEL.style.bottom = `${
+								editorEl.clientHeight - popoverPosition.top
+							}px`;
 							popupEL.style.left = `${popoverPosition.left}px`;
 						}
 
@@ -71,7 +80,7 @@ export default function CompletionPopover() {
 				popupEL.style.display = "none";
 			}
 		}
-	}, [completionPopup, editorState.children, editorState.selection, ref]);
+	}, [completionPopup, ref]);
 	return completionPopup ? (
 		<CompletionPopup
 			ref={ref}

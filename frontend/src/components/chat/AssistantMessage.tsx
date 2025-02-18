@@ -3,20 +3,28 @@ import React, { KeyboardEvent } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { SimpleTooltip } from "../simpleTooltip";
-interface ChatMessageInterface {
-	message: {
-		id?: string;
-		role: "user" | "assistant" | "system";
-		content: string;
-		voice_message?: boolean;
-		finish_reason?: "stop" | "length" | "content_filter" | null;
-		created_at: string;
-	};
+export interface ChatMessageInterface {
+	id?: string;
+	role: "user" | "assistant" | "system";
+	content: string;
+	voice_message?: boolean;
+	finish_reason?: "stop" | "length" | "content_filter" | null;
+	created_at: string;
 }
 
 // npm install remark-gfm
 
-export default function AssistantMessage({ message }: ChatMessageInterface) {
+export default function AssistantMessage({
+	message,
+}: {
+	message: ChatMessageInterface;
+}) {
+	const MemoizedMessage = React.useMemo(
+		// https://retool.com/blog/react-markdown-component-the-easy-way-to-create-rich-text
+
+		() => <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>,
+		[]
+	);
 	const pRef = React.useRef<HTMLParagraphElement>(null);
 	// editor.insertText("hello");
 	const [isCopied, setIsCopied] = React.useState<boolean>(false);
@@ -36,7 +44,6 @@ export default function AssistantMessage({ message }: ChatMessageInterface) {
 
 		// dispatch(addText(content));
 	}, [message]);
-
 	return (
 		<>
 			{message && (
@@ -49,8 +56,8 @@ export default function AssistantMessage({ message }: ChatMessageInterface) {
 						/>
 					</div>
 					<div ref={pRef} className="whitespace-pre-line overflow-x-auto">
-						{/* https://retool.com/blog/react-markdown-component-the-easy-way-to-create-rich-text */}
-						<Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
+						{MemoizedMessage}
+						{message.finish_reason}
 					</div>
 					{/* <Button onKeyDown={(e) => { preventScrolling(e) }} variant="outlined" className="!ml-auto !block transition-opacity !duration-100 opacity-0 group-hover:opacity-100" onClick={handelCopyText}>copyText</Button> */}
 					<div className="flex gap-3 pt-2 justify-between">

@@ -15,11 +15,14 @@ export default function QABoxUploadResource({
 	if (isError) return <ConnectionErrorMessage />;
 	return (
 		<div className={`${className} `}>
-			<div className="flex flex-wrap justify-center gap-1 p-1">
-				{qaBox.resources.map((resource: any) => {
+			<div className="flex flex-wrap gap-1 p-1">
+				{qaBox.resources.map((resource) => {
 					// console.log(qaBox);
 					return (
-						<div className="px-1" key={resource.id}>
+						<div
+							className="p-1 px-2 font-semibold text-main bg-primary rounded "
+							key={resource.id}
+						>
 							{resource.type}| {resource.name}
 						</div>
 					);

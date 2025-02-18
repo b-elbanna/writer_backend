@@ -8,8 +8,8 @@ export default function CustomModal({
 	title,
 	description,
 }: {
-	title: string;
-	description: string;
+	title: React.ReactNode;
+	description: React.ReactNode;
 	customButton: React.ReactNode;
 	modalPopUpContent: React.ReactNode;
 }) {
@@ -20,7 +20,10 @@ export default function CustomModal({
 				<span>{customButton}</span>
 			</DialogTrigger>
 
-			<DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
+			<DialogContent
+				className=" md:min-w-[600px] lg:min-w-[800px] xl:min-w-[1024px] "
+				onPointerDownOutside={(e) => e.preventDefault()}
+			>
 				<DialogTitle>{title}</DialogTitle>
 				<DialogDescription>{description}</DialogDescription>
 				{modalPopUpContent}

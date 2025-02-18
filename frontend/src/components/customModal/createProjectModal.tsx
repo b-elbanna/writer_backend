@@ -5,12 +5,14 @@ import { CustomButton } from "../forms/formFiels/customButton";
 
 import CreateProjectForm from "../forms/createProjectForm/createProjectForm";
 import CustomModal from "./customModal";
+import CustomModalTitle from "./modalTitle";
+import CustomModalDescription from "./modalDescription";
 
 export default function CreateProjectModal() {
 	return (
 		<CustomModal
-			title="Create Project"
-			description="Enter your project details"
+			title={<CreateProjectModalTitle />}
+			description={<CreateProjectModalDescription />}
 			modalPopUpContent={<CreateProjectForm />}
 			customButton={
 				<CustomButton
@@ -21,7 +23,7 @@ export default function CreateProjectModal() {
 					children={
 						<>
 							<Plus size={20} />
-							Create
+							New Project
 						</>
 					}
 					className=" !flex gap-1 p-1  text-sm  "
@@ -29,4 +31,11 @@ export default function CreateProjectModal() {
 			}
 		/>
 	);
+}
+
+function CreateProjectModalTitle() {
+	return <CustomModalTitle title="New Project" />;
+}
+function CreateProjectModalDescription() {
+	return <CustomModalDescription description="Create a new project" />;
 }

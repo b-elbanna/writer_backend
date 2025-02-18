@@ -3,7 +3,7 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { cn } from "@udecode/cn";
 
-import { ParagraphPlugin, Plate } from "@udecode/plate-common/react";
+import { ParagraphPlugin, Plate, TPlateEditor } from "@udecode/plate/react";
 
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -18,7 +18,6 @@ import buildEditor from "./editorBuilder";
 import { useAppDispatch, useAppSelector } from "@/rtk/store";
 import { updateUserProject } from "@/rtk/slices/currentUserProject";
 import CompletionPopover from "./completion/completionPopover";
-import { isEditorFocused } from "@udecode/slate-react";
 import { setprojectOpenedToolId } from "@/rtk/slices/projectOpenedTool";
 
 const initialvalue = [
@@ -28,27 +27,24 @@ const initialvalue = [
 		children: [{ text: "" }],
 	},
 ];
+
 let timer: string | number | NodeJS.Timeout | undefined;
 let timer1: string | number | NodeJS.Timeout | undefined;
 
 export default function MainEditor({ className }: { className?: string }) {
+	const [rewritePopoverVisaiblity, setRewritePopoverVisaiblity] =
+		useState(false);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const appDispatch = useAppDispatch();
 	const currentUserProject = useAppSelector(
 		(state) => state.currentUserProject
 	);
 	const currentTool = useAppSelector((state) => state.projectOpenedTool);
-	const [rewritePopoverVisaiblity, setRewritePopoverVisaiblity] =
-		useState(false);
-	const appDispatch = useAppDispatch();
-
 	const editor = useMemo(() => {
 		console.log("### rendering Editor..... ");
-		if (currentUserProject.value.article) {
-			return buildEditor(currentUserProject.value.article);
-		} else {
-			return buildEditor(initialvalue);
-		}
+		return buildEditor(currentUserProject.value.article || initialvalue);
 	}, []);
-	const containerRef = useRef<HTMLDivElement>(null);
+
 	const saveArticle = useCallback(() => {
 		console.log("saving article...");
 		appDispatch(
@@ -65,7 +61,8 @@ export default function MainEditor({ className }: { className?: string }) {
 				<TooltipProvider>
 					<Plate
 						onChange={(e) => {
-							setRewritePopoverVisaiblity(false);
+							console.log(e.value);
+							rewritePopoverVisaiblity && setRewritePopoverVisaiblity(false);
 							if (timer1) clearTimeout(timer1);
 							timer1 = setTimeout(() => {
 								setRewritePopoverVisaiblity(true);
@@ -103,12 +100,12 @@ export default function MainEditor({ className }: { className?: string }) {
 								size="md"
 								// placeholder="Start writing..."
 							>
-								{rewritePopoverVisaiblity &&
-									editor.string([0]).length > 1 &&
-									isEditorFocused(editor) && <CompletionPopover />}
+								{rewritePopoverVisaiblity && editor.api.isFocused() && (
+									<CompletionPopover />
+								)}
 							</Editor>
 
-							<CursorOverlay containerRef={containerRef} />
+							{/* <CursorOverlay containerRef={containerRef} /> */}
 						</div>
 					</Plate>
 				</TooltipProvider>

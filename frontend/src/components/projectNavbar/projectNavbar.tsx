@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/rtk/store";
-import WrittingToolsBar from "../writtingToolsBar/writtingToolsBar";
+import WrittingToolsBar from "../functionBar/writtingToolsBar/writtingToolsBar";
 import { CircleCheckIcon, LoaderPinwheel } from "lucide-react";
 
 export default function ProjectNavbar() {

@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import fetcher from "./swrFetcher";
-import { ChatMessageInterface } from "@/components/chat/chat";
+// import { ChatMessageInterface } from "@/components/chat/MessagesProvider";
 import { useCallback } from "react";
 export interface ChatMessageResInterface {
 	id: string;
@@ -19,7 +19,14 @@ export default function useChatBoxMessagesFetcher(chatId: string) {
 	);
 
 	const getChatMesssages = useCallback(() => {
-		let chatMess: ChatMessageInterface[] = [];
+		let chatMess: {
+			id: string;
+			role: string;
+			content: string;
+			created_at: string;
+			finish_reason?: string | null;
+			voice_message?: boolean;
+		}[] = [];
 		if (data?.results) {
 			for (let message of data?.results as ChatMessageResInterface[]) {
 				chatMess.unshift({

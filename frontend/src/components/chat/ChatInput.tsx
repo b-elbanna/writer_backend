@@ -3,7 +3,6 @@ import { SendHorizonalIcon } from "lucide-react";
 import React, { useEffect, useRef } from "react";
 import { LastMessageContext } from "./MessagesProvider";
 import { RecordView } from "./reactMicButton";
-import { soketUrl } from "@/baseApis/base";
 import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
 import { useAppDispatch, useAppSelector } from "@/rtk/store";
 import prepareSocketMessagesReq from "@/utils/prepareChatSocketReq";
@@ -12,6 +11,15 @@ import postCreateAnswerBoxAction, {
 } from "@/endpointActions/postCreateAnswerBoxAction";
 import { setprojectOpenedToolId } from "@/rtk/slices/projectOpenedTool";
 import { useEventListener } from "usehooks-ts";
+import {
+	resetPapersSearchData,
+	searchAboutPapers,
+} from "@/rtk/slices/papersSearch";
+import { getArxivSearch } from "@/rtk/slices/articleResources/arxivSearch";
+import { getArchiveSearch } from "@/rtk/slices/articleResources/archiveSearch";
+import { getEPMCSearch } from "@/rtk/slices/articleResources/EPMCSearch";
+import { getScopusSearch } from "@/rtk/slices/articleResources/scopusSearch";
+import { getSynthicalSearch } from "@/rtk/slices/articleResources/synthicalSearch";
 type ChatInputProps = {
 	chatId: string;
 	setQAResults?: React.Dispatch<React.SetStateAction<QABoxAnswerInterface[]>>;
@@ -20,6 +28,7 @@ type ChatInputProps = {
 };
 
 let answerSearchTimeOut: string | number | NodeJS.Timeout | undefined;
+let searchAboutPapersTimeOut: string | number | NodeJS.Timeout | undefined;
 
 export default function ChatInput({
 	chatId,
@@ -27,7 +36,6 @@ export default function ChatInput({
 	qaResults,
 	sendSocketMesssage,
 }: ChatInputProps) {
-	const socketUrl = `${soketUrl}chat/${chatId}`;
 	const appDispatch = useAppDispatch();
 	const currentUserProject = useAppSelector(
 		(state) => state.currentUserProject
@@ -65,14 +73,15 @@ export default function ChatInput({
 
 			setLastChatMessage(lastUserMess);
 
-			if (setQAResults && currentTool.id === 2 && qaResults?.length) {
+			if (setQAResults && currentTool.id === 1 && qaResults?.length) {
+				const source_text = qaResults
+					.slice(0, qaResults.length >= 4 ? 3 : qaResults.length - 1)
+					.join("\n");
+				console.log("source_text", source_text);
 				sendSocketMesssage({
 					messages: prepareSocketMessagesReq(reqMess),
 					model: "gpt_4",
-					source_text: qaResults.reduce(
-						(acc, cur, i) => (i < 4 ? acc + cur[0] + ".\n" : ""),
-						""
-					),
+					source_text,
 				});
 			} else {
 				sendSocketMesssage({
@@ -83,6 +92,13 @@ export default function ChatInput({
 
 			changeInputContet("");
 			contentEditableRef.current.textContent = "";
+		}
+		if (currentTool.id === 2 && inputContent && contentEditableRef.current) {
+			appDispatch(getArxivSearch({ query: inputContent }));
+			appDispatch(getArchiveSearch({ query: inputContent }));
+			appDispatch(getEPMCSearch({ query: inputContent }));
+			appDispatch(getScopusSearch({ query: inputContent }));
+			appDispatch(getSynthicalSearch({ query: inputContent }));
 		}
 	};
 
@@ -96,11 +112,18 @@ export default function ChatInput({
 
 	const handelOnChangeEvent = () => {
 		let inputTextContent = contentEditableRef.current?.textContent;
-		if (inputTextContent !== inputContent)
-			changeInputContet(inputTextContent || "");
 		if (answerSearchTimeOut) clearTimeout(answerSearchTimeOut);
+		// if (searchAboutPapersTimeOut) clearTimeout(searchAboutPapersTimeOut);
+		// if (currentTool.id === 2) {
+		// 	!inputTextContent?.length && appDispatch(resetPapersSearchData());
+		// 	searchAboutPapersTimeOut = setTimeout(() => {
+		// 		inputTextContent?.length &&
+		// 			appDispatch(searchAboutPapers({ query: inputTextContent }));
+		// 	}, 500);
+		// }
+
 		if (setQAResults) {
-			if (currentTool.id === 2) {
+			if (currentTool.id === 1) {
 				!inputTextContent?.length && setQAResults([]);
 				answerSearchTimeOut = setTimeout(() => {
 					inputTextContent = contentEditableRef.current?.textContent;
@@ -115,6 +138,8 @@ export default function ChatInput({
 				}, 500);
 			}
 		}
+		if (inputTextContent !== inputContent)
+			changeInputContet(inputTextContent || "");
 	};
 	useEventListener(
 		"focus",
@@ -134,7 +159,7 @@ export default function ChatInput({
 	}, [inputContent]);
 
 	return (
-		<div className=" absolute bottom-0 bg-gradient-to-t from-white to-transparent w-full px-10  pt-4 pb-4 z-20  ">
+		<div className=" absolute bottom-0 bg-gradient-to-t from-white to-transparent w-full px-10  py-3 z-20  ">
 			<div className="flex items-center justify-center rounded-3xl p-2 shadow-2xl bg-primary m-auto">
 				<RecordView
 					inputRef={contentEditableRef}
@@ -146,7 +171,6 @@ export default function ChatInput({
 						className="block  w-full rounded-[20px] border bg-main  max-h-[200px] py-3 px-4 overflow-y-auto scrollbar-hide focus:outline-none"
 						ref={contentEditableRef}
 						onKeyDown={handleKeyDownEvent}
-						onChange={handelOnChangeEvent}
 						contentEditable
 						onInput={handelOnChangeEvent}
 						onFocus={(e) => {
@@ -157,7 +181,8 @@ export default function ChatInput({
 					></div>
 					<p
 						onMouseEnter={() => contentEditableRef.current?.focus()}
-						className="text-mygray   absolute top-1/2 left-0 py-3 px-4  -translate-y-1/2  block"
+						onClick={() => contentEditableRef.current?.focus()}
+						className="text-mygray w-full   absolute top-1/2 left-0 py-3 px-4  -translate-y-1/2  block"
 					>
 						{placeholderContent}
 					</p>

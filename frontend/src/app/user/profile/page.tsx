@@ -4,6 +4,8 @@ import { clientApi } from "@/baseApis/axiosBase";
 import postLogoutAction from "@/endpointActions/postLogoutAction";
 import useRefreshTokenPostFetcher from "@/swrDataFetcher/refreshTokenFetcher";
 import useUserDataFetcher from "@/swrDataFetcher/userDataFetcher";
+import pagePaths from "@/urlPaths/pagePaths";
+import Link from "next/link";
 
 function ProfilePage() {
 	let {
@@ -34,17 +36,17 @@ function ProfilePage() {
 					</button>
 				</div>
 				<div>
-					<button
-						type="button"
-						onClick={() => {
-							clientApi
-								.get("chat/chatboxes")
-								.then((res) => console.log(res.data));
-						}}
-						className="p-2 rounded bg-red-500 text-white"
-					>
-						getdata
-					</button>
+					<Link href={pagePaths.projectsPage}>
+						<button
+							type="button"
+							onClick={() => {
+								console.log("go to projects page");
+							}}
+							className="p-2 rounded bg-active text-white"
+						>
+							Projects
+						</button>
+					</Link>
 				</div>
 			</div>
 		</div>

@@ -26,7 +26,7 @@ export function CheckboxInput({
 						/>
 						<label
 							htmlFor={optionValue}
-							className={`group-hover:text-secondary !text-base peer-checked:!text-secondary cursor-pointer  duration-500 `}
+							className={`group-hover:text-active !text-base peer-checked:!text-active cursor-pointer  duration-500 `}
 						>
 							{label}
 						</label>
@@ -46,7 +46,7 @@ export function CheckBoxContainer({
 	return (
 		<div className="my-7">
 			<div className="w-full mb-2 text-lg border-b border-black">{label}</div>
-			<div className="w-full px-3 max-h-96  overflow-auto ">{children}</div>
+			<div className="w-full px-3 max-h-72  overflow-auto ">{children}</div>
 		</div>
 	);
 }

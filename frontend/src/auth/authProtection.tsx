@@ -19,16 +19,17 @@ const authProtection = (ProtectedPage: React.ComponentType<any>) => {
 		const router = useRouter();
 		useEffect(() => {
 			// If the user is not authenticated, redirect to the login page
-			if (isError || userError) {
+			if (isError) {
 				router.push(pagePaths.loginPage);
 			}
-		}, [router, isError, userError]);
+		}, [router, isError, refreshData]);
 
-		if (isError || userError) return <div>Redirecting to login page...</div>;
+		if (isError) return <div>Redirecting to login page...</div>;
 		if (isLoading) {
-			if (!refreshData) {
-				return <div>checking for authentication ...</div>;
-			}
+			console.log(refreshData);
+			// if (!refreshData) {
+			return <div>checking for authentication ...</div>;
+			// }
 			// Display a message or loading indicator while redirecting
 		}
 		return <ProtectedPage {...props} />;
