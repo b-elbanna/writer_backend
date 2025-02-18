@@ -21,7 +21,7 @@ import { useFilePicker } from "use-file-picker";
 
 import { PlateElement } from "./plate-element";
 import { Spinner } from "./spinner";
-import { useUploadFile } from "../../lib/uploadthing";
+import { useUploadFile } from "@/lib/uploadthing";
 
 const CONTENT: Record<
 	string,
