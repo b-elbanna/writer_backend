@@ -21,7 +21,7 @@ import { useFilePicker } from "use-file-picker";
 
 import { PlateElement } from "./plate-element";
 import { Spinner } from "./spinner";
-// import { useUploadFile } from "@/lib/uploadthing";
+import { useUploadFile } from "@/lib1/uploadthing";
 
 const CONTENT: Record<
 	string,
@@ -62,10 +62,10 @@ export const MediaPlaceholderElement = withHOC(
 
 			const { api } = useEditorPlugin(PlaceholderPlugin);
 
-			// const { isUploading, progress, uploadFile, uploadedFile, uploadingFile } =
-			// 	useUploadFile();
+			const { isUploading, progress, uploadFile, uploadedFile, uploadingFile } =
+				useUploadFile();
 
-			// const loading = isUploading && uploadingFile;
+			const loading = isUploading && uploadingFile;
 
 			const currentContent = CONTENT[element.mediaType];
 
@@ -80,92 +80,92 @@ export const MediaPlaceholderElement = withHOC(
 					const firstFile = updatedFiles[0];
 					const restFiles = updatedFiles.slice(1);
 
-					// replaceCurrentPlaceholder(firstFile);
+					replaceCurrentPlaceholder(firstFile);
 
 					restFiles.length > 0 && (editor as any).tf.insert.media(restFiles);
 				},
 			});
 
-			// const replaceCurrentPlaceholder = useCallback(
-			// 	(file: File) => {
-			// 		// void uploadFile(file);
-			// 		api.placeholder.addUploadingFile(element.id as string, file);
-			// 	},
-			// 	[api.placeholder, element.id, uploadFile]
-			// );
+			const replaceCurrentPlaceholder = useCallback(
+				(file: File) => {
+					void uploadFile(file);
+					api.placeholder.addUploadingFile(element.id as string, file);
+				},
+				[api.placeholder, element.id, uploadFile]
+			);
 
-			// useEffect(() => {
-			// 	if (!uploadedFile) return;
+			useEffect(() => {
+				if (!uploadedFile) return;
 
-			// 	const path = editor.api.findPath(element);
+				const path = editor.api.findPath(element);
 
-			// 	// editor.tf.withoutSaving(() => {
-			// 	// 	editor.tf.removeNodes({ at: path });
+				editor.tf.withoutSaving(() => {
+					editor.tf.removeNodes({ at: path });
 
-			// 	// 	const node = {
-			// 	// 		children: [{ text: "" }],
-			// 	// 		initialHeight: imageRef.current?.height,
-			// 	// 		initialWidth: imageRef.current?.width,
-			// 	// 		isUpload: true,
-			// 	// 		name: element.mediaType === FilePlugin.key ? uploadedFile.name : "",
-			// 	// 		placeholderId: element.id as string,
-			// 	// 		type: element.mediaType!,
-			// 	// 		url: uploadedFile.url,
-			// 	// 	};
+					const node = {
+						children: [{ text: "" }],
+						initialHeight: imageRef.current?.height,
+						initialWidth: imageRef.current?.width,
+						isUpload: true,
+						name: element.mediaType === FilePlugin.key ? uploadedFile.name : "",
+						placeholderId: element.id as string,
+						type: element.mediaType!,
+						url: uploadedFile.url,
+					};
 
-			// 	// 	editor.tf.insertNodes(node, { at: path });
+					editor.tf.insertNodes(node, { at: path });
 
-			// 	// 	updateUploadHistory(editor, node);
-			// 	// });
+					updateUploadHistory(editor, node);
+				});
 
-			// 	api.placeholder.removeUploadingFile(element.id as string);
-			// 	// eslint-disable-next-line react-hooks/exhaustive-deps
-			// }, [uploadedFile, element.id]);
+				api.placeholder.removeUploadingFile(element.id as string);
+				// eslint-disable-next-line react-hooks/exhaustive-deps
+			}, [uploadedFile, element.id]);
 
 			// React dev mode will call useEffect twice
 			const isReplaced = useRef(false);
 
 			/** Paste and drop */
-			// useEffect(() => {
-			// 	if (isReplaced.current) return;
+			useEffect(() => {
+				if (isReplaced.current) return;
 
-			// 	isReplaced.current = true;
-			// 	const currentFiles = api.placeholder.getUploadingFile(
-			// 		element.id as string
-			// 	);
+				isReplaced.current = true;
+				const currentFiles = api.placeholder.getUploadingFile(
+					element.id as string
+				);
 
-			// 	if (!currentFiles) return;
+				if (!currentFiles) return;
 
-			// 	replaceCurrentPlaceholder(currentFiles);
+				replaceCurrentPlaceholder(currentFiles);
 
-			// 	// eslint-disable-next-line react-hooks/exhaustive-deps
-			// }, [isReplaced]);
+				// eslint-disable-next-line react-hooks/exhaustive-deps
+			}, [isReplaced]);
 
 			return (
 				<PlateElement ref={ref} className={cn(className, "my-1")} {...props}>
-					{!isImage && (
+					{(!loading || !isImage) && (
 						<div
 							className={cn(
 								"flex cursor-pointer select-none items-center rounded-sm bg-muted p-3 pr-9 hover:bg-primary/10"
 							)}
-							onClick={() => openFilePicker()}
+							onClick={() => !loading && openFilePicker()}
 							contentEditable={false}
 						>
 							<div className="relative mr-3 flex text-muted-foreground/80 [&_svg]:size-6">
 								{currentContent.icon}
 							</div>
 							<div className="whitespace-nowrap text-sm text-muted-foreground">
-								{/* <div>
+								<div>
 									{loading ? uploadingFile?.name : currentContent.content}
-								</div> */}
+								</div>
 
-								{!isImage && (
+								{loading && !isImage && (
 									<div className="mt-1 flex items-center gap-1.5">
-										{/* <div>{formatBytes(uploadingFile?.size ?? 0)}</div> */}
+										<div>{formatBytes(uploadingFile?.size ?? 0)}</div>
 										<div>–</div>
 										<div className="flex items-center">
 											<Spinner className="mr-1 size-3.5" />
-											{/* {progress ?? 0}% */}
+											{progress ?? 0}%
 										</div>
 									</div>
 								)}
@@ -173,13 +173,13 @@ export const MediaPlaceholderElement = withHOC(
 						</div>
 					)}
 
-					{/* {isImage && loading && (
+					{isImage && loading && (
 						<ImageProgress
 							file={uploadingFile}
 							imageRef={imageRef}
 							progress={progress}
 						/>
-					)} */}
+					)}
 
 					{children}
 				</PlateElement>

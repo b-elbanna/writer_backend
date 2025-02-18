@@ -124,7 +124,7 @@ import { CursorOverlay } from "../plate-ui/cursor-overlay";
 import { SlashInputElement } from "../plate-ui/slash-input-element";
 import { DraggableAboveNodes } from "../plate-ui/draggable";
 import { ListElement } from "../plate-ui/list-element";
-import { autoformatPlugins } from "@/lib/plate/autoformat-plugins";
+import { autoformatPlugins } from "@/components/editor/autoformat-plugins";
 import { FireLiComponent, FireMarker } from "../plate-ui/indent-fire-marker";
 import { TodoLi, TodoMarker } from "../plate-ui/indent-todo-marker";
 import { resetBlockTypePlugin } from "./resetRules";
