@@ -22,7 +22,7 @@ import {
 	CodeSyntaxPlugin,
 } from "@udecode/plate-code-block/react";
 
-import { INDENT_LIST_KEYS, ListStyleType } from "@udecode/plate-indent-list";
+// import { INDENT_LIST_KEYS, ListStyleType } from "@udecode/plate-indent-list";
 
 import {
 	createPlateEditor,
