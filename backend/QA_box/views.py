@@ -109,6 +109,7 @@ class ResourceListCreateView(ListCreateAPIView):
         # Do something with the text field here
         serializer.save(
             user=self.request.user,
+            text_source=text,
             embeddings=embedded_text.embeddings,
             paragraphs=embedded_text.paragraphs,
         )
@@ -197,8 +198,8 @@ class QABoxListCreateView(ListCreateAPIView):
                     user=self.request.user,
                 )
 
-        resource.projects.add(project)
         if resource:
+            resource.projects.add(project)
             resource.qaBoxes.add(
                 serializer.save(user=self.request.user, project=project)
             )

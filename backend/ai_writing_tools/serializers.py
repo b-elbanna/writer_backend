@@ -1,9 +1,55 @@
 from rest_framework import serializers
-from .models import (
-    Project,
-    TextImprovement,
-    TextCompletion,
-)
+from .models import Project, TextImprovement, TextCompletion, Excalidraw
+
+
+class ExcalidrawListCreateSerializer(serializers.ModelSerializer):
+
+    def validate_project(self, value):
+        request = self.context["request"]
+        if value and (value.user != request.user):
+            raise serializers.ValidationError(
+                f'Invalid pk "{value.id}" - object does not exist.'
+            )
+        return value
+
+    class Meta:
+        model = Excalidraw
+        fields = (
+            "id",
+            "user",
+            "name",
+            "project",
+            "created_at",
+            "modified_at",
+        )
+        read_only_fields = (
+            "id",
+            "user",
+            "created_at",
+            "modified_at",
+        )
+
+
+class ExcalidrawRetrieveUpdateDestroySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Excalidraw
+        fields = (
+            "id",
+            "user",
+            "project",
+            "name",
+            "elements",
+            "created_at",
+            "modified_at",
+        )
+        read_only_fields = (
+            "name",
+            "id",
+            "user",
+            "project",
+            "created_at",
+            "modified_at",
+        )
 
 
 class SortByRelatednessSerializer(serializers.Serializer):
@@ -55,7 +101,8 @@ class ProjectListCreateSerializer(serializers.ModelSerializer):
     lang = serializers.ChoiceField(choices=[("en", "English"), ("ar", "Arabic")])
     used_credits = serializers.IntegerField(read_only=True)
     user_name = serializers.CharField(source="user.username", read_only=True)
-    outline = serializers.JSONField()
+    outline = serializers.JSONField(write_only=True)
+    # url = serializers.HyperlinkedRelatedField()
 
     class Meta:
         model = Project
@@ -63,8 +110,6 @@ class ProjectListCreateSerializer(serializers.ModelSerializer):
         read_only_fields = (
             "id",
             "qaBox",
-            "article",
-            "article_text",
             "user",
             "chatbox",
             "used_credits",
@@ -73,8 +118,6 @@ class ProjectListCreateSerializer(serializers.ModelSerializer):
             "id",
             "lang",
             "title",
-            "article",
-            "article_text",
             "name",
             "chatbox",
             "qaBox",

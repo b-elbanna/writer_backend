@@ -3,6 +3,14 @@ from ai_utils.gpt import streamed_chat_completion
 from ai_chat.utils import prepare_chatbox_messages
 from openai.resources.chat.completions import ChatCompletionChunk
 
+QABOX_SYSTEM_MESSAGE = """
+Your task is to answer 'question' only using the information within the provided 'text_source'. 
+Follow these guidelines:
+- 'text_source' is peice of text that collected paragraphs from different sources(books, articles, etc). 
+- Do not provide any information that is not supported by the 'text_source'.
+- Explain your answer if necessary.
+"""
+
 
 class ChatConsumer(JsonWebsocketConsumer):
     def connect(self):
@@ -21,7 +29,7 @@ class ChatConsumer(JsonWebsocketConsumer):
 
     def receive_json(self, res):
         """
-        {"messages":[{"role":"user","content":"hi"}],"model":"gpt_4"}
+        {"messages":[{"role":"user","content":"hi"}],"model":"gpt_4","source_text":"text content"}
         """
         source_text: list[dict[str, str]] | None = res.get("source_text", None)
         messages: list[dict[str, str]] | None = res.get("messages", None)
@@ -30,7 +38,7 @@ class ChatConsumer(JsonWebsocketConsumer):
 
             ## start ## chat.completion
             chatbox_id = self.chat_id
-            user_msg = messages[-1]["content"]
+            user_msg = messages.pop()["content"]
             if chatbox_id and user_msg:
                 from ai_chat.models import ChatMessage, ChatBox
 
@@ -44,10 +52,12 @@ class ChatConsumer(JsonWebsocketConsumer):
                 assistant_msg = ""
                 chunk: ChatCompletionChunk
                 finish_reason = ""
-                get_answer_user_msg = f"answer the previous message using only the provided text_source.  text_source: '{source_text}'"
+                get_answer_user_msg = (
+                    f"'question': '{user_msg}'    .text_source': '{source_text}'"
+                )
                 chat_stream_chunks = (
                     streamed_chat_completion(
-                        system_message=chatbox.sys_message,
+                        system_message=QABOX_SYSTEM_MESSAGE,
                         messages=[
                             *messages,
                             {"role": "user", "content": get_answer_user_msg},
@@ -55,7 +65,11 @@ class ChatConsumer(JsonWebsocketConsumer):
                     )
                     if source_text
                     else streamed_chat_completion(
-                        system_message=chatbox.sys_message, messages=messages
+                        system_message=chatbox.sys_message,
+                        messages=[
+                            *messages,
+                            {"role": "user", "content": user_msg},
+                        ],
                     )
                 )
                 for chunk in chat_stream_chunks:

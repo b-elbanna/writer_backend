@@ -23,19 +23,24 @@ MAIN_ORIGIN = "https://chatg6.ai"
 CURRENT_ORIGIN = "http://localhost:3000" if DEBUG else MAIN_ORIGIN
 
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://192.168.1.7:3000",
+    "http://192.168.1.7:8000",
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://192.168.1.7:3000",
+    "http://192.168.1.7:8000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True

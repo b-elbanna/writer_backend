@@ -24,6 +24,7 @@ from .models import (
     Project,
     TextCompletion,
     TextImprovement,
+    Excalidraw,
 )
 from .serializers import (
     TextImprovementSerializer,
@@ -33,7 +34,34 @@ from .serializers import (
     ArticleOutlineSerializer,
     GetArticleDescriptionSerializer,
     SortByRelatednessSerializer,
+    ExcalidrawListCreateSerializer,
+    ExcalidrawRetrieveUpdateDestroySerializer,
 )
+
+
+class ExcalidrawListCreateView(ListCreateAPIView):
+    serializer_class = ExcalidrawListCreateSerializer
+
+    def get_queryset(self):
+        """
+        Filter the queryset to QABoxes associated with the current user.
+        """
+        queryset = Excalidraw.objects.filter(user=self.request.user)
+        return queryset
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class ExcalidrawRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    serializer_class = ExcalidrawRetrieveUpdateDestroySerializer
+
+    def get_queryset(self):
+        """
+        Filter the queryset to QABoxes associated with the current user.
+        """
+        queryset = Excalidraw.objects.filter(user=self.request.user)
+        return queryset
 
 
 class SortByRelatednessView(GenericAPIView):
@@ -90,13 +118,13 @@ class ArticleOutlineView(GenericAPIView):
         validated_data: dict = serializer.validated_data
         title = validated_data.get("title")
         description = validated_data.get("description")
-        outline = (
-            create_outline(article_title=title, descriptions=description)
-            .choices[0]
-            .message.content
-        )
-        outline = json.loads(outline)
-        # outline.get("outline")
+        res = create_outline(article_title=title, descriptions=description)
+        outline = res.choices[0].message.content
+        # outline = json.loads(outline)
+
+        # print token numers
+        print(res.usage.total_tokens)
+
         return Response(
             outline,
             status=status.HTTP_200_OK,
@@ -220,22 +248,6 @@ class ProjectListCreateView(ListCreateAPIView):
         description: list[str] = serializer.validated_data["description"]
         print(title, name, outline, description)
 
-        article_temp: list = [
-            {
-                "id": "1",
-                "type": "h1",
-                "children": [{"text": serializer.validated_data["title"]}],
-            },
-            {"id": "2", "type": "p", "children": [{"text": ""}]},
-        ]
-        for heading in outline:
-            article_temp.append(
-                {"id": heading[-4:], "type": "h2", "children": [{"text": heading}]}
-            )
-            article_temp.append(
-                {"id": heading[-3:], "type": "p", "children": [{"text": "..."}]}
-            )
-
         if Project.objects.filter(user=self.request.user, name=name).exists():
             return Response(
                 {"detail": "Project with the same name already exists."},
@@ -277,7 +289,7 @@ class ProjectListCreateView(ListCreateAPIView):
         serializer.save(
             user=self.request.user,
             chatbox=chatbox,
-            article=article_temp,
+            article=outline,
         )
 
         headers = self.get_success_headers(serializer.data)

@@ -7,6 +7,8 @@ from .views import (
     ArticleOutlineView,
     GetArticleDescriptionView,
     SortByRelatednessView,
+    ExcalidrawRetrieveUpdateDestroyView,
+    ExcalidrawListCreateView,
 )
 
 urlpatterns = [
@@ -27,4 +29,11 @@ urlpatterns = [
     # projects or articles
     path("projects", ProjectListCreateView.as_view(), name="projects"),
     path("project/<pk>", ProjectRetrieveUpdateDestroyView.as_view(), name="project"),
+    # excalidraws
+    path("excalidraws", ExcalidrawListCreateView.as_view(), name="excalidraws"),
+    path(
+        "excalidraw/<pk>",
+        ExcalidrawRetrieveUpdateDestroyView.as_view(),
+        name="excalidraw",
+    ),
 ]

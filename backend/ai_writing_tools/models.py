@@ -25,6 +25,7 @@ class Project(models.Model):
     description = models.TextField(default="")
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+
     used_credits = models.IntegerField(default=0)
 
     def __str__(self):
@@ -33,6 +34,22 @@ class Project(models.Model):
     class Meta:
         unique_together = ("name", "user")
         ordering = ["-created_at"]
+
+
+class Excalidraw(models.Model):
+    id = models.UUIDField(
+        default=uuid.uuid4, unique=True, primary_key=True, editable=False
+    )
+    name = models.CharField(max_length=255)
+    elements = models.JSONField(default=list)
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="excalidraws"
+    )
+    project = models.OneToOneField(
+        Project, on_delete=models.CASCADE, related_name="excalidraw", null=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    modified_at = models.DateTimeField(auto_now=True, null=True)
 
 
 class TextImprovement(models.Model):

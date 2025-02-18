@@ -50,7 +50,9 @@ class Resource(models.Model):
     embeddings = models.JSONField(default=list)
     # json formated text
     paragraphs = models.JSONField()
-    text_source = models.TextField(max_length=255, blank=True, null=True)
+    text_source = models.TextField(
+        db_index=True, max_length=255, blank=True, null=True, unique=True
+    )
     type = models.CharField(
         max_length=10,
         default="Text",
