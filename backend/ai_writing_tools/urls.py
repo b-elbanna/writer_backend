@@ -2,13 +2,17 @@ from django.urls import path
 from .views import (
     ProjectListCreateView,
     ProjectRetrieveUpdateDestroyView,
+    SortByRelatednessView,
+)
+from .draw_views import (
+    ExcalidrawRetrieveUpdateDestroyView,
+    ExcalidrawListCreateView,
+)
+from .tools_views import (
     TextImprovementView,
     TextCompletionView,
     ArticleOutlineView,
     GetArticleDescriptionView,
-    SortByRelatednessView,
-    ExcalidrawRetrieveUpdateDestroyView,
-    ExcalidrawListCreateView,
 )
 
 urlpatterns = [

@@ -1,5 +1,6 @@
 from scipy import spatial
-from ai_utils.embedding import EmbeddingText, gpt, EmbeddedChunk
+from ai_utils.embedding import EmbeddedChunk
+from ai_utils.generation_model import OpenaiModel, GenerationModel
 
 
 class paragraphRelatedness:
@@ -25,15 +26,13 @@ def most_related_paragraphs(
     """
     return most related paragraphs for each question with its score:
     """
-    question_embedding = EmbeddingText.make_embeddings(
-        input=question, model=gpt.available_models.embedding_model
-    )
+    question_embedding = GenerationModel().text_embedding(text=question)
 
     relatednesses = [
         paragraphRelatedness(
             embedded_chunck.paragraph,
             relatedness_fn(
-                question_embedding.data[0].embedding,
+                question_embedding["embedding"],
                 embedded_chunck.embedding,
             ),
             embedded_chunck.resource_name,
@@ -41,9 +40,3 @@ def most_related_paragraphs(
         for embedded_chunck in embeddedChunks
     ]
     return sorted(relatednesses, key=lambda x: x.relatednessScore, reverse=True)
-
-
-# save embedding as a resource
-# receive a question
-# search for answer in ebeddings
-# send most related paragraphs

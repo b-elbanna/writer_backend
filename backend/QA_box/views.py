@@ -10,8 +10,9 @@ from .serializers import (
     QASearchSerializer,
     ResourceSerializer,
     FilePdfSerializer,
+    FileUploadSerializer,
 )
-from .models import QABox, Resource
+from .models import QABox, Resource, UploadedFile
 from ai_utils import embedding
 from search_utils import wiki
 from .qa_utils import most_related_paragraphs
@@ -20,44 +21,81 @@ from rest_framework.parsers import FileUploadParser
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
-class FileUploadView(GenericAPIView):
+class FileUploadView(ListCreateAPIView):
+    serializer_class = FileUploadSerializer
+    queryset = UploadedFile.objects.all()
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+
+        # Do something with the text field here
+        serializer.save(
+            user=self.request.user,
+        )
+
+
+class ExtractPdfDataView(ListCreateAPIView):
     # parser_classes = [FileUploadParser]
     serializer_class = FilePdfSerializer
+    queryset = UploadedFile.objects.all()
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+
+        # Do something with the text field here
+        serializer.save(
+            user=self.request.user,
+        )
 
     def post(self, request, format=None):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         file: InMemoryUploadedFile = serializer.validated_data["file"]
+
+        try:
+            extracted_data = self.extract_pdf_data(file)
+        except PyPDF2.errors.PdfReadError as e:
+            raise ValidationError({"file": f"Invalid PDF file: {e}"})
+        except Exception as e:
+            raise ValidationError({"file": f"Error processing PDF: {e}"})
+        self.perform_create(serializer)
+        return Response(extracted_data, status=status.HTTP_201_CREATED)
+
+    def extract_pdf_data(self, file: InMemoryUploadedFile) -> dict:
         file_name = file.name
         file_size = file.size
         file_type = file.content_type
-        pdf_reader = PyPDF2.PdfReader(file)
-        print(pdf_reader.metadata)
-        print("###################")
-        print(pdf_reader.outline)
-        print("###################")
-        print("###################")
+
+        try:
+            pdf_reader = PyPDF2.PdfReader(file)
+        except PyPDF2.errors.PdfReadError as e:
+            raise e
+        except Exception as e:
+            raise e
+
         text = ""
         for page in pdf_reader.pages:
             text += page.extract_text()
 
+        paragraphs = self.split_text_into_paragraphs(text)
+
+        return {
+            "file_name": file_name,
+            "file_size": file_size,
+            "file_type": file_type,
+            "text": paragraphs,
+        }
+
+    def split_text_into_paragraphs(self, text: str):
+        # Split by two or more newlines or a single newline
         paragraphs = re.split(r"\n{2,}|\n", text)
-
-        # Remove any empty strings from the list
-        paragraphs = list(filter(None, paragraphs))
-        return Response(
-            {
-                "file_name": file_name,
-                "file_size": file_size,
-                "file_type": file_type,
-                "text": paragraphs,
-            },
-            status=status.HTTP_201_CREATED,
-        )
-
-
-class ExtractPdfDataView(GenericAPIView):
-    pass
+        # Remove empty strings and leading/trailing whitespace
+        paragraphs = [p.strip() for p in paragraphs if p.strip()]
+        return paragraphs
 
 
 class BoxResourceListCreateView(ListCreateAPIView):

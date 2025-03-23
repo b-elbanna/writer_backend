@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 import uuid
-from ai_utils.gpt import available_models
 
 
 class Project(models.Model):
@@ -65,8 +64,8 @@ class TextImprovement(models.Model):
     used_credits = models.IntegerField(default=0)
     model_name = models.CharField(
         max_length=255,
-        choices=available_models._asdict(),
-        default=available_models.base_model,
+        # choices=available_models._asdict(),
+        # default=available_models.base_model,
     )
     improved_text = models.TextField()
     original_text = models.TextField()
@@ -95,8 +94,8 @@ class TextCompletion(models.Model):
     )
     model_name = models.CharField(
         max_length=255,
-        choices=available_models._asdict(),
-        default=available_models.base_model,
+        # choices=available_models._asdict(),
+        # default=available_models.base_model,
     )
     is_sentence = models.BooleanField(default=False)
     original_text = models.TextField()

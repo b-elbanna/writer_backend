@@ -62,9 +62,18 @@ def extract_paragraph_from_text(text: str):
     return paragraphs
 
 
-if __name__ == "__main__":
-    import timeit
+from ai_utils.generation_model import GenerationModel
 
-    # ex_time = timeit.timeit(test_func, number=1)
-    # get_page("black hole", "en")
-    # print(ex_time)
+
+def test():
+    res = GenerationModel().genereate_article_outline(
+        "black holes",
+        "An exploration of the astrophysical properties of …onal effects on surrounding matter and spacetime.",
+    )
+    # print(res["text"])
+    with open("wr.txt", "w") as f:
+        f.write(res["text"])
+
+
+if __name__ == "__main__":
+    test()

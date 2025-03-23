@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import GetApiEndPointsView
 
 admin.site.site_header = "AI_WRiteR"  # default: "Django Administration"
@@ -18,3 +20,6 @@ urlpatterns = [
     path("api/v1/writing/", include("ai_writing_tools.urls")),
     path("api/v1/qa/", include("QA_box.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

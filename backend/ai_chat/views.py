@@ -1,11 +1,10 @@
-from django.http import Http404
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 
 from .serializers import ChatBoxSerializer, ChatMessageSerializer
-from .models import ChatBox, ChatMessage
+from .models import ChatBox
 from .Paginations import CustomPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import (
@@ -15,9 +14,8 @@ from rest_framework.generics import (
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ai_utils.gpt import chat_completion, open_ai
 from ai_chat.utils import prepare_chatbox_messages
-
+from ai_utils.generation_model import GenerationModel
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
@@ -32,9 +30,8 @@ class FileUploadView(APIView):
         if file:
             try:
                 file.name = file.name + ".webm"
-                res = open_ai.audio.transcriptions.create(
-                    model="whisper-1", file=(file.name, file.file, file.content_type)
-                )
+                res = GenerationModel().audio_transcription(file)
+
             except Exception as e:
                 return Response(
                     {"error": str(e)},
@@ -43,7 +40,7 @@ class FileUploadView(APIView):
 
             return Response(
                 {
-                    "content": res.text,
+                    "content": res["text"],
                     "size": file.size,
                 },
                 status=status.HTTP_202_ACCEPTED,
@@ -89,17 +86,9 @@ class ChatMessageListCreateView(ListCreateAPIView):
         chatbox_id = self.kwargs["chatbox_id"]
         user_msg = serializer.validated_data["user_msg"]
         messages = prepare_chatbox_messages(chatbox_id, user_msg)
-        res = chat_completion(messages=messages)
-        assistant_msg = res.choices[0].message.content
-        # choices[0] = {
-        #   "finish_reason": "stop",
-        #   "index": 0,
-        #   "message": {
-        #     "content": "The 2020 World Series was played in Texas at Globe Life Field in Arlington.",
-        #     "role": "assistant"
-        #   },
-        #   "logprobs": null
-        # }
+        res = GenerationModel().chat_completion(messages=messages)
+        assistant_msg = res["text"]
+
         serializer.save(
             user=self.request.user, chatbox_id=chatbox_id, assistant_msg=assistant_msg
         )

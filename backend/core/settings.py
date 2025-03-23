@@ -15,6 +15,7 @@ OPENAI_KEY = env.str("OPENAI_KEY")
 SPRINGER_KEY = env.str("SPRINGER_KEY")
 DB_PASSWORD = env.str("DB_PASSWORD")
 
+
 DEBUG = env.bool("DEBUG", default=False)
 
 MAIN_ORIGIN = "https://chatg6.ai"
@@ -92,7 +93,7 @@ AUTHENTICATION_BACKENDS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -208,6 +209,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "static"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -86,7 +86,10 @@ class TextImprovementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TextImprovement
-        fields = "__all__"
+        fields = (
+            "original_text",
+            "project",
+        )
         read_only_fields = (
             "id",
             "user",

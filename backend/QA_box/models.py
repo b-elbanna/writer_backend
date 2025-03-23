@@ -4,6 +4,21 @@ from ai_writing_tools.models import Project
 import uuid
 
 
+class UploadedFile(models.Model):
+    id = models.UUIDField(
+        default=uuid.uuid4, unique=True, primary_key=True, editable=False
+    )
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="uploadedFiles"
+    )
+    file = models.FileField(upload_to="uploads/")
+    name = models.CharField(max_length=255)
+    size = models.IntegerField()
+    type = models.CharField(max_length=255)
+    text = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 #################################
 # Question Answering
 #################################
@@ -24,7 +39,6 @@ class QABox(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("name", "user")
         ordering = ["-created_at"]
 
     def __str__(self):

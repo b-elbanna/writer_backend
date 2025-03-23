@@ -1,8 +1,8 @@
-from .models import Resource, QAMessage, QABox
+from .models import Resource, UploadedFile, QAMessage, QABox
 from rest_framework import serializers
 
 
-class FilePdfSerializer(serializers.Serializer):
+class FilePdfSerializer(serializers.ModelSerializer):
     file = serializers.FileField(allow_empty_file=False, required=True)
 
     def validate_file(self, value):
@@ -11,6 +11,17 @@ class FilePdfSerializer(serializers.Serializer):
         if value.content_type != "application/pdf":
             raise serializers.ValidationError("Only pdf files are allowed")
         return value
+
+    class Meta:
+        model = UploadedFile
+        fields = ["file", "created_at"]
+
+
+class FileUploadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UploadedFile
+        fields = ["file"]
 
 
 class QASearchSerializer(serializers.Serializer):

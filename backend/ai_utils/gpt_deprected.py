@@ -2,6 +2,7 @@ from collections import namedtuple
 from openai import OpenAI
 from openai.types import Completion
 
+
 # from django.conf import settings
 from core import settings
 import tiktoken
@@ -24,13 +25,13 @@ openai_models = namedtuple(
 )
 available_models = openai_models(
     base_model="gpt-4o-mini",
+    embedding_model="text-embedding-ada-002",
     gpt_35_turbo="gpt-3.5-turbo-1106",
     gpt_4="gpt-4",
     gpt_4_turbo="gpt-4-1106-preview",
     gpt_4_vision="gpt-4-vision-preview",
     gpt_4o="gpt-4o",
     gpt_4o_mini="gpt-4o-mini-2024-07-18",
-    embedding_model="text-embedding-ada-002",
 )
 app_languages = namedtuple("app_languages", ["english", "arabic"])
 available_langs = app_languages(english="en", arabic="ar")

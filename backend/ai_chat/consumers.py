@@ -1,7 +1,6 @@
 from channels.generic.websocket import JsonWebsocketConsumer
-from ai_utils.gpt import streamed_chat_completion
-from ai_chat.utils import prepare_chatbox_messages
-from openai.resources.chat.completions import ChatCompletionChunk
+from ai_utils.generation_model import GenerationModel
+
 
 QABOX_SYSTEM_MESSAGE = """
 Your task is to answer 'question' only using the information within the provided 'text_source'. 
@@ -15,17 +14,11 @@ Follow these guidelines:
 class ChatConsumer(JsonWebsocketConsumer):
     def connect(self):
         self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
-        # cookies = self.scope["headers"]
-        # print(cookies)
         user = self.scope.get("user")
         print(self.chat_id)
         print(user)
-        self.chatbox = user.chatboxes.get(id=self.chat_id)
+        # self.chatbox = user.chatboxes.get(id=self.chat_id)
         self.accept()
-
-        # else:
-        #     print(user)
-        #     self.close(code=401)
 
     def receive_json(self, res):
         """
@@ -36,13 +29,13 @@ class ChatConsumer(JsonWebsocketConsumer):
 
         if messages:
 
-            ## start ## chat.completion
             chatbox_id = self.chat_id
             user_msg = messages.pop()["content"]
             if chatbox_id and user_msg:
                 from ai_chat.models import ChatMessage, ChatBox
 
                 chatbox = ChatBox.objects.get(id=chatbox_id)
+                # chatbox = self.chatbox
 
                 chatmessage = ChatMessage(
                     user=self.scope["user"],
@@ -50,13 +43,14 @@ class ChatConsumer(JsonWebsocketConsumer):
                     user_msg=user_msg,
                 )
                 assistant_msg = ""
-                chunk: ChatCompletionChunk
                 finish_reason = ""
                 get_answer_user_msg = (
                     f"'question': '{user_msg}'    .text_source': '{source_text}'"
                 )
+                generation_model = GenerationModel()
+
                 chat_stream_chunks = (
-                    streamed_chat_completion(
+                    generation_model.streamed_chat_completion(
                         system_message=QABOX_SYSTEM_MESSAGE,
                         messages=[
                             *messages,
@@ -64,7 +58,7 @@ class ChatConsumer(JsonWebsocketConsumer):
                         ],
                     )
                     if source_text
-                    else streamed_chat_completion(
+                    else generation_model.streamed_chat_completion(
                         system_message=chatbox.sys_message,
                         messages=[
                             *messages,
@@ -73,10 +67,11 @@ class ChatConsumer(JsonWebsocketConsumer):
                     )
                 )
                 for chunk in chat_stream_chunks:
-                    finish_reason = chunk.choices[0].finish_reason
-                    res_content = chunk.choices[0].delta.content
+                    print(chunk["total_tokens"])
+                    print(chunk["completion_tokens"])
+                    finish_reason = chunk["finish_reason"]
+                    res_content = chunk["text"]
                     assistant_msg += res_content or ""
-                    print(chunk.choices[0])
                     self.send_json(
                         {
                             "content": res_content,
@@ -84,23 +79,26 @@ class ChatConsumer(JsonWebsocketConsumer):
                         }
                     )
 
-                if finish_reason == "length":
+                if finish_reason.lower() == "length":
                     messages.append(
                         {"role": "assistant", "content": assistant_msg},
                     )
                     messages.append(
                         {"role": "user", "content": "continue"},
                     )
-                    for chunk in streamed_chat_completion(messages):
-                        finish_reason = chunk.choices[0].finish_reason
-                        res_content = chunk.choices[0].delta.content
+                    for chunk in generation_model.streamed_chat_completion(messages):
+                        finish_reason = chunk["finish_reason"]
+                        res_content = chunk["text"]
                         assistant_msg += res_content or ""
+                        print(chunk["total_tokens"])
+                        print(chunk["completion_tokens"])
                         self.send_json(
                             {"content": res_content, "finish_reason": finish_reason}
                         )
 
                 chatmessage.assistant_msg = assistant_msg
                 chatmessage.finish_reason = finish_reason
+                # chatmessage.used_credits =
                 chatmessage.save()
 
             else:
