@@ -34,9 +34,13 @@ urlpatterns = [
     path("projects", ProjectListCreateView.as_view(), name="projects"),
     path("project/<pk>", ProjectRetrieveUpdateDestroyView.as_view(), name="project"),
     # excalidraws
-    path("excalidraws", ExcalidrawListCreateView.as_view(), name="excalidraws"),
     path(
-        "excalidraw/<pk>",
+        "project/<project_pk>/draws",
+        ExcalidrawListCreateView.as_view(),
+        name="project_excalidraw",
+    ),
+    path(
+        "draw/<pk>",
         ExcalidrawRetrieveUpdateDestroyView.as_view(),
         name="excalidraw",
     ),

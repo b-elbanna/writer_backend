@@ -8,7 +8,7 @@ class ExcalidrawListCreateSerializer(serializers.ModelSerializer):
         request = self.context["request"]
         if value and (value.user != request.user):
             raise serializers.ValidationError(
-                f'Invalid pk "{value.id}" - object does not exist.'
+                f'Invalid project id "{value.id}" - object does not exist.'
             )
         return value
 
@@ -19,6 +19,7 @@ class ExcalidrawListCreateSerializer(serializers.ModelSerializer):
             "user",
             "name",
             "project",
+            "elements",
             "created_at",
             "modified_at",
         )

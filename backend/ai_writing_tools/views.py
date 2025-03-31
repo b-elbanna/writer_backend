@@ -12,9 +12,7 @@ from QA_box.models import QABox
 from search_utils import wiki
 from ai_chat.models import ChatBox
 from .pricing import calc_credits
-from .models import (
-    Project,
-)
+from .models import Project, Excalidraw
 from .serializers import (
     ProjectListCreateSerializer,
     ProjectRetrieveUpdateDestroySerializer,
@@ -98,6 +96,11 @@ class ProjectListCreateView(ListCreateAPIView):
             user=self.request.user,
             chatbox=chatbox,
             article=outline,
+        )
+        Excalidraw.objects.create(
+            user=self.request.user,
+            name=name,
+            project=project,
         )
         QABox.objects.create(
             user=self.request.user,

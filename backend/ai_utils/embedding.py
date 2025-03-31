@@ -110,13 +110,13 @@ class EmbeddingText:
 
         splitted = re.split("\.\n", full_paragraph)
         splitted = [p for p in splitted if len(p) >= 15]
-        paragraphs = self.clean_and_split_strings(paragraphs)
+        paragraphs = self.clean_and_split_strings(splitted)
         return paragraphs
 
     def _get_embeddings(self, paragraphs):
         embeddings = []
         for _input in paragraphs:
-            embed_req = GenerationModel().text_embedding(text=_input)
+            embed_req = GenerationModel().text_embedding(text=_input)["embedding"]
             embeddings.append(embed_req)
         return embeddings
 

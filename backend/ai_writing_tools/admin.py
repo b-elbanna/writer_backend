@@ -6,3 +6,4 @@ from . import models
 admin.site.register(models.Project)
 admin.site.register(models.TextCompletion)
 admin.site.register(models.TextImprovement)
+admin.site.register(models.Excalidraw)

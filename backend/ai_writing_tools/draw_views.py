@@ -22,11 +22,15 @@ class ExcalidrawListCreateView(ListCreateAPIView):
         """
         Filter the queryset to QABoxes associated with the current user.
         """
-        queryset = Excalidraw.objects.filter(user=self.request.user)
+        project_id = self.kwargs["project_pk"]
+        queryset = Excalidraw.objects.filter(
+            user=self.request.user, project_id=project_id
+        )
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        project_id = self.kwargs["project_pk"]
+        serializer.save(user=self.request.user, project_id=project_id)
 
 
 class ExcalidrawRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):

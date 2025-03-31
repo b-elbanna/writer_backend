@@ -12,9 +12,9 @@ class UploadedFile(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="uploadedFiles"
     )
     file = models.FileField(upload_to="uploads/")
-    name = models.CharField(max_length=255)
-    size = models.IntegerField()
-    type = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, null=True)
+    size = models.IntegerField(null=True)
+    type = models.CharField(max_length=255, null=True)
     text = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

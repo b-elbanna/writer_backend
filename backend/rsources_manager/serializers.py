@@ -1,8 +1,8 @@
-from .models import Resource, UploadedFile, QAMessage, QABox
 from rest_framework import serializers
+from .models import Resource
 
 
-class FilePdfSerializer(serializers.ModelSerializer):
+class ExtractPdfDataSerializer(serializers.ModelSerializer):
     file = serializers.FileField(allow_empty_file=False, required=True)
 
     def validate_file(self, value):
@@ -13,19 +13,8 @@ class FilePdfSerializer(serializers.ModelSerializer):
         return value
 
     class Meta:
-        model = UploadedFile
+        model = Resource
         fields = ["file", "created_at"]
-
-
-class FileUploadSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = UploadedFile
-        fields = ["file"]
-
-
-class QASearchSerializer(serializers.Serializer):
-    q = serializers.CharField(trim_whitespace=True)
 
 
 class ResourceSerializer(serializers.ModelSerializer):
@@ -55,20 +44,13 @@ class ResourceSerializer(serializers.ModelSerializer):
         ]
         # fields = "__all__"
         read_only_fields = [
+            "chucks_number",
+            "embeddings_number",
             "user",
             # "qaBoxes",
         ]
 
     # validation of the qabox id is exists
-    def validate_qa_box_id(self, value):
-        request = self.context["request"]
-        try:
-            QABox.objects.get(id=value, user=request.user)
-        except:
-            raise serializers.ValidationError(
-                f'Invalid pk "{value}" - QABox does not exist.'
-            )
-        return value
 
     def get_chucks_number(self, obj):
         try:
@@ -81,37 +63,3 @@ class ResourceSerializer(serializers.ModelSerializer):
             return len(obj.get("embeddings"))
         except:
             return len(obj.embeddings)
-
-
-class QAMessageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = QAMessage
-        fields = "__all__"
-        read_only_fields = ["user", "qaBox", "answer"]
-
-
-class QABoxSerializer(serializers.ModelSerializer):
-    user_name = serializers.CharField(source="user.username", read_only=True)
-    project_name = serializers.CharField(source="project.name", read_only=True)
-    resources = ResourceSerializer(many=True, read_only=True)
-
-    def validate_project(self, value):
-        request = self.context["request"]
-        if value and (value.user != request.user):
-            raise serializers.ValidationError(
-                f'Invalid pk "{value.id}" - object does not exist.'
-            )
-        return value
-
-    class Meta:
-        model = QABox
-        fields = [
-            "id",
-            "name",
-            "resources",
-            "user_name",
-            "project_name",
-            "project",
-            "created_at",
-        ]
-        read_only_fields = ["user"]

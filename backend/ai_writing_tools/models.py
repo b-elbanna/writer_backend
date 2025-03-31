@@ -44,8 +44,8 @@ class Excalidraw(models.Model):
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name="excalidraws"
     )
-    project = models.OneToOneField(
-        Project, on_delete=models.CASCADE, related_name="excalidraw", null=True
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="excalidraws", null=True
     )
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     modified_at = models.DateTimeField(auto_now=True, null=True)
