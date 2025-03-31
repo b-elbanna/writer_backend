@@ -4,7 +4,6 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { cn } from "@udecode/cn";
 
 import { ParagraphPlugin, Plate, TPlateEditor } from "@udecode/plate/react";
-
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
@@ -42,6 +41,8 @@ export default function MainEditor({ className }: { className?: string }) {
 	const currentTool = useAppSelector((state) => state.projectOpenedTool);
 	const editor = useMemo(() => {
 		console.log("### rendering Editor..... ");
+		console.log(currentUserProject.value.article);
+
 		return buildEditor(currentUserProject.value.article || initialvalue);
 	}, []);
 

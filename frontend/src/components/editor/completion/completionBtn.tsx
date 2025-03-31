@@ -33,7 +33,8 @@ export const CompletionBtn = forwardRef<
 	);
 
 	useEffect(() => {
-		wordsBeforeCaretRef.current &&
+		isActiveResources &&
+			wordsBeforeCaretRef.current &&
 			postCreateAnswerBoxAction({
 				qaBoxId: currentUserProject.value.qaBox,
 				query: wordsBeforeCaretRef.current,

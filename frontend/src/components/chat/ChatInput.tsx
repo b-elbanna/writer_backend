@@ -135,7 +135,7 @@ export default function ChatInput({
 								setQAResults(res.data);
 						  })
 						: setQAResults([]);
-				}, 500);
+				}, 1000);
 			}
 		}
 		if (inputTextContent !== inputContent)

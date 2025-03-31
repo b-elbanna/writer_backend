@@ -8,23 +8,34 @@ export default function ActiveResourcesTogglerButton() {
 	const appDispatch = useAppDispatch();
 	const isActiveResources = useAppSelector((state) => state.isActiveResources);
 	return (
-		<MainTogglerButton
-			toggledValue={isActiveResources}
-			toggleFn={() => appDispatch(toggleActiveResources())}
-			Icon1={
-				<FileQuestionIcon
-					width={25}
-					height={25}
-					className="w-[25px] p-[2px] inline-block"
-				/>
-			}
-			Icon2={
-				<FileXIcon
-					width={25}
-					height={25}
-					className="w-[25px] p-[2px]  h-[25px]  "
-				/>
-			}
-		/>
+		<div className={`w-fit pointer-events-auto`}>
+			<SimpleTooltip
+				tooltip={`${
+					isActiveResources ? "Resources Search Activated" : "Resources Ignored"
+				} `}
+				delay={0}
+			>
+				<div>
+					<MainTogglerButton
+						toggledValue={isActiveResources}
+						toggleFn={() => appDispatch(toggleActiveResources())}
+						Icon1={
+							<FileQuestionIcon
+								width={25}
+								height={25}
+								className="w-[25px] p-[2px] inline-block"
+							/>
+						}
+						Icon2={
+							<FileXIcon
+								width={25}
+								height={25}
+								className="w-[25px] p-[2px]  h-[25px]  "
+							/>
+						}
+					/>
+				</div>
+			</SimpleTooltip>
+		</div>
 	);
 }

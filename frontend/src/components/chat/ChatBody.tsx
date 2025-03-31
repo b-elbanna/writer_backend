@@ -55,7 +55,7 @@ export default function ChatBody({
 				});
 			}
 
-			if (lastSocketMessage.finish_reason == "stop") {
+			if (lastSocketMessage.finish_reason?.toLocaleLowerCase() == "stop") {
 				appDispatch(
 					addChatMessage({ ...currentMessage, finish_reason: "stop" })
 				);

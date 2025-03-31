@@ -17,6 +17,7 @@ function ProjectPage({ params }: { params: any }) {
 	const appDispatch = useAppDispatch();
 	const currentProject = useAppSelector((state) => state.currentUserProject);
 	const currentChat = useAppSelector((state) => state.currentUserChatbox);
+	console.log(currentProject);
 	useScrollLock();
 	useEffect(() => {
 		if (projectId) {
@@ -67,8 +68,8 @@ function ProjectPage({ params }: { params: any }) {
 			style={{ height: windowSize.height }}
 			className=" w-full overflow-hidden  "
 		>
-			<main className=" flex flex-col w-full h-full overflow-hidden relative    ">
-				<MainEditor className="overflow-hidden flex-1 " />
+			<main className="w-full h-full overflow-hidden   ">
+				<MainEditor className="overflow-hidden  " />
 				<FuctionBar />
 			</main>
 		</div>

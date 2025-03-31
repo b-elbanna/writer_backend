@@ -9,7 +9,7 @@ declare global {
 		article_text?: string;
 		article?: {};
 		description: string;
-		outline: string[];
+		outline: {}[];
 		used_credits: 0;
 		user_name: string;
 		created_at: string;

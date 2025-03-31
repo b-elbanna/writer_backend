@@ -132,7 +132,15 @@ import { ToggleElement } from "../plate-ui/toggle-element";
 import { EquationElement } from "../plate-ui/equation-element";
 import { TocElement } from "../plate-ui/toc-element";
 
-export default function useMyEditor(initialValue: any) {
+export default function useMyEditor(
+	initialValue: any = [
+		{
+			id: "1",
+			type: ParagraphPlugin.key,
+			children: [{ text: "" }],
+		},
+	]
+) {
 	const editor = createPlateEditor({
 		plugins: [
 			CursorOverlayPlugin.configure({

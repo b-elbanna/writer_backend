@@ -1,9 +1,14 @@
 import Loading from "@/app/loading";
+import { clientApi } from "@/baseApis/axiosBase";
+import postSaveDrawAction from "@/endpointActions/postSaveDrawAction";
 import { useAppSelector } from "@/rtk/store";
 import dynamic from "next/dynamic";
+import { useState } from "react";
 let timer: string | number | NodeJS.Timeout | undefined;
 const Excalidraw = dynamic(
-	async () => (await import("@excalidraw/excalidraw")).Excalidraw,
+	async () => {
+		return (await import("@excalidraw/excalidraw")).Excalidraw;
+	},
 	{
 		ssr: false,
 		loading: () => <Loading />,
@@ -13,13 +18,25 @@ export default function CustomExcalidraw() {
 	const currentUserProject = useAppSelector(
 		(state) => state.currentUserProject
 	);
+	const [drawId, setDrawId] = useState<string>();
 	return (
 		<Excalidraw
+			initialData={clientApi
+				.get(`/writing/project/${currentUserProject.value.id}/draws`)
+				.then((res) => {
+					let draws = res.data;
+					console.log(draws);
+					setDrawId(draws[0].id);
+					return draws[0];
+				})}
 			onChange={(elements, state, files) => {
 				if (timer) clearTimeout(timer);
-				timer = setTimeout(() => {
-					if (currentUserProject.value.id) console.log(elements);
-				}, 2000);
+				if (drawId && currentUserProject.value.id) {
+					console.log(elements);
+					timer = setTimeout(() => {
+						postSaveDrawAction(drawId, [...elements]);
+					}, 2000);
+				}
 			}}
 		/>
 	);

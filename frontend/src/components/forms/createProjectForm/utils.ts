@@ -1,11 +1,24 @@
+"use client";
 import postCreateDescriptionAction from "@/endpointActions/postCreateDescriptionAction";
 import { CreateProjectFormDataInterface } from "./createProjectForm";
 import React from "react";
 import postCreateOutlineAction from "@/endpointActions/postCreateOutlineAction";
 import postCreateProjectAction from "@/endpointActions/postCreateProjectAction";
-
+import { nanoid } from "@udecode/plate";
 let onChangeTimer: string | number | NodeJS.Timeout | undefined;
 let dataSent = false;
+let idCounter = 0;
+function addIdsToNodes(nodes: any[]): any[] {
+	return nodes.map((node) => {
+		if (!node.id && !node.text) {
+			node.id = nanoid(10);
+		}
+		if (node.children) {
+			node.children = addIdsToNodes(node.children);
+		}
+		return node;
+	});
+}
 
 export async function onSubmitCreateArticleFrom(
 	values: CreateProjectFormDataInterface,
@@ -13,15 +26,16 @@ export async function onSubmitCreateArticleFrom(
 	setCheckboxVisibility: React.Dispatch<React.SetStateAction<boolean>>,
 	setDescriptionLoader: React.Dispatch<React.SetStateAction<boolean>>,
 	setDescriptionsData: React.Dispatch<React.SetStateAction<string[]>>,
+	theEditor: any,
 	onSubmitRedirect: (projectId: string) => void
 ) {
 	if (!checkboxVisibility) {
 		// 1. on first submit create descriptions
 		setDescriptionLoader(true);
 		await postCreateDescriptionAction({
-			title: `  ${values.targeted_field}  ${values.written_content} title is  '${values.title}'`,
+			title: `  ${values.targeted_field}  ${values.written_content}  Article Title:  '${values.title}'`,
 		}).then((res) => {
-			const descriptions = res.data.descriptions;
+			const descriptions = res.data;
 			console.log(descriptions);
 			setCheckboxVisibility(true);
 			setDescriptionsData(descriptions);
@@ -34,14 +48,16 @@ export async function onSubmitCreateArticleFrom(
 			title: values.title,
 			discription: values?.descriptions.join(","),
 		}).then(async (res) => {
-			// create project
-			console.log("creating project");
+			console.log(res.data);
+			let outLine = theEditor.api.markdown.deserialize(res.data);
+			outLine = addIdsToNodes(outLine);
+			console.log(outLine);
 			const creatRes = await postCreateProjectAction({
 				title: values.title,
 				description: values?.descriptions.join(","),
 				name: values.name,
 				lang: values.lang,
-				outline: res.data?.outline,
+				outline: outLine,
 			});
 			const projectId = (creatRes.data as ProjectInterface).id;
 			onSubmitRedirect(projectId);
@@ -95,7 +111,7 @@ export function validateCreateArticleForm(
 		values?.lang
 	) {
 		// create description if data are valid
-		onChangeTimer = setTimeout(async () => {}, 1000);
+		// onChangeTimer = setTimeout(async () => {}, 1000);
 	}
 
 	return errors;

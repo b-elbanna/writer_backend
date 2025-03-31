@@ -1,9 +1,8 @@
 import React from "react";
-// import * as Dialog from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
 import { CustomButton } from "../forms/formFiels/customButton";
 
-import CreateProjectForm from "../forms/createProjectForm/createProjectForm";
+import CreateProjectForm from "@/components/forms/createProjectForm/createProjectForm";
 import CustomModal from "./customModal";
 import CustomModalTitle from "./modalTitle";
 import CustomModalDescription from "./modalDescription";

@@ -40,7 +40,7 @@ export default function FuctionBar() {
 		<MessagesProvider>
 			<div
 				style={{ height: !currentTool.id ? "0%" : "100%" }}
-				className={` transition-all ease-in-out duration-500 w-full border bottom-0 z-[222] shadow-2xl relative bg-white`}
+				className={` transition-all ease-in-out duration-500 w-full absolute border bottom-0 z-[222] shadow-2xl bg-white`}
 			>
 				<div
 					className={`  right-0 ${
@@ -48,29 +48,23 @@ export default function FuctionBar() {
 					} px-5 flex items-center justify-between w-full z-10 py-3 transition-all pointer-events-none duration-500 delay-200`}
 				>
 					<WritingToolsBar />
-					{currentUserProject.value.qaBox && (
-						<div className={`w-fit pointer-events-auto`}>
-							<SimpleTooltip
-								tooltip={`${
-									isActiveResources
-										? "Resources Search Activated"
-										: "Resources Ignored"
-								} `}
-								delay={0}
-							>
-								<div>
-									<ActiveResourcesTogglerButton />
-								</div>
-							</SimpleTooltip>
-						</div>
-					)}
+					{currentUserProject.value.qaBox && <ActiveResourcesTogglerButton />}
 				</div>
+				{/* <div
+					className={`  right-0 ${
+						currentTool.id ? "top-0" : "absolute -translate-y-full bottom-4  "
+					} px-5 flex items-center justify-between w-full z-10 py-3 transition-all pointer-events-none duration-500 delay-200`}
+				>
+					<WritingToolsBar />
+					{currentUserProject.value.qaBox && <ActiveResourcesTogglerButton />}
+				</div> */}
 				{currentTool.id === 1 && (
-					<div className={`h-full`}>
+					<div className={`h-full relative`}>
+						<ChatBody body={ref} lastSocketMessage={lastJsonMessage} />
 						<div
 							className={`${
-								papersSearchData.value.length ? "h-full pb-36" : "h-0"
-							} overflow-y-auto overflow-x-hidden translation-all duration-500`}
+								qaResults.length ? "h-[100px] pb-36" : "h-0"
+							} overflow-y-auto absolute top-0 w-full overflow-x-hidden translation-all duration-500`}
 						>
 							{qaResults.map(
 								(qaResult, i) =>
@@ -79,8 +73,6 @@ export default function FuctionBar() {
 									)
 							)}
 						</div>
-
-						<ChatBody body={ref} lastSocketMessage={lastJsonMessage} />
 					</div>
 				)}
 				{currentTool.id === 2 && (
