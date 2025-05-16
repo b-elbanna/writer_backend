@@ -21,7 +21,7 @@ export default function LoginForm() {
 		getUserLogin(values)
 			.then((resAxios: AxiosResponse) => {
 				if (resAxios.status === 200) {
-					router.push(pagePaths.profilePage);
+					router.push(pagePaths.projectsPage);
 				}
 				// console.log(resAxios)
 			})
@@ -48,7 +48,7 @@ export default function LoginForm() {
 			});
 
 	return (
-		<div className={` overflow-hidden`}>
+		<div className={`pt-3 overflow-hidden`}>
 			<Form
 				onSubmit={onSubmitFunc}
 				validate={(values) => validateLoginForm(values)}

@@ -131,6 +131,7 @@ import { resetBlockTypePlugin } from "./resetRules";
 import { ToggleElement } from "../plate-ui/toggle-element";
 import { EquationElement } from "../plate-ui/equation-element";
 import { TocElement } from "../plate-ui/toc-element";
+import PlatePagination from "./editorPlugins";
 
 export default function useMyEditor(
 	initialValue: any = [

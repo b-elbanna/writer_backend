@@ -45,7 +45,7 @@ export default function FuctionBar() {
 				<div
 					className={`  right-0 ${
 						currentTool.id ? "top-0" : "absolute -translate-y-full bottom-4  "
-					} px-5 flex items-center justify-between w-full z-10 py-3 transition-all pointer-events-none duration-500 delay-200`}
+					} px-10 flex items-center justify-between w-full z-10 py-3 transition-all pointer-events-none duration-500 delay-200`}
 				>
 					<WritingToolsBar />
 					{currentUserProject.value.qaBox && <ActiveResourcesTogglerButton />}

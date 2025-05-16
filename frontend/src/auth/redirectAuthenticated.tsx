@@ -19,7 +19,7 @@ const redirectAuthenticated = (UnauthPage: React.ComponentType<any>) => {
 		useEffect(() => {
 			// If the user is not authenticated, redirect to the login page
 			if (!isError && !userError && !userLoading && !isLoading) {
-				router.push(pagePaths.profilePage);
+				router.push(pagePaths.projectsPage);
 			}
 		}, [refreshData, router, isLoading, userLoading]);
 
