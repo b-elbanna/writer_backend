@@ -75,7 +75,8 @@ const insertBlockMap: Record<
 		insertAudioPlaceholder(editor, { select: true }),
 	[CalloutPlugin.key]: (editor) => insertCallout(editor, { select: true }),
 	[CodeBlockPlugin.key]: (editor) => insertCodeBlock(editor, { select: true }),
-	[EquationPlugin.key]: (editor) => insertEquation(editor, { select: true }),
+	[EquationPlugin.key]: (editor) =>
+		insertEquation(editor as any, { select: true }),
 	[FilePlugin.key]: (editor) => insertFilePlaceholder(editor, { select: true }),
 	[INDENT_LIST_KEYS.todo]: insertList,
 	[ImagePlugin.key]: (editor) =>
@@ -103,7 +104,7 @@ const insertInlineMap: Record<
 > = {
 	[DatePlugin.key]: (editor) => insertDate(editor, { select: true }),
 	[InlineEquationPlugin.key]: (editor) =>
-		insertInlineEquation(editor, "", { select: true }),
+		insertInlineEquation(editor as any, "", { select: true }),
 	[LinkPlugin.key]: (editor) => triggerFloatingLink(editor, { focused: true }),
 };
 
