@@ -15,7 +15,7 @@ export async function middleware(req: NextRequest) {
 		return NextResponse.redirect(new URL(pagePaths.loginPage, req.url));
 	}
 }
-// See "Matching Paths" below to learn more
+
 export const config = {
 	matcher: "/user/:path*",
 };

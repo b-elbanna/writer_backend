@@ -1,6 +1,5 @@
-import postLoginAction, {
-	LoginFormDataInterface,
-} from "@/endpointActions/postLoginAction";
+import { LoginFormDataInterface } from "@/endpointActions/postLoginAction";
+
 function validateLoginForm(values: LoginFormDataInterface) {
 	const errors: any = {};
 	const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -28,7 +27,5 @@ function validateLoginForm(values: LoginFormDataInterface) {
 
 	return errors;
 }
-const getUserLogin = (values: LoginFormDataInterface) => {
-	return postLoginAction(values);
-};
-export { validateLoginForm, getUserLogin };
+
+export { validateLoginForm };

@@ -3,7 +3,14 @@
 import postCreateQABoxResourceAction from "@/endpointActions/postCreateQABoxResourceAction";
 import postCreateResourceAction from "@/endpointActions/postCreateResourceAction";
 import useCurrentQaBoxFetcher from "@/swrDataFetcher/currentQaBoxFetcher";
-import { FilePlus2, UploadIcon } from "lucide-react";
+import {
+	FilePlus2,
+	UploadIcon,
+	FileIcon,
+	XIcon,
+	CheckCircle,
+	AlertCircle,
+} from "lucide-react";
 import React, { useState } from "react";
 import pdfToText from "react-pdftotext";
 
@@ -26,9 +33,9 @@ export default function SingleResourceUploader({
 		if (e.target.files?.length) {
 			setFile(e.target.files[0]);
 			const isPdf = e.target.files[0].type === "application/pdf";
-			isPdf && setStatus("reading");
 
-			isPdf &&
+			if (isPdf) {
+				setStatus("reading");
 				pdfToText(e.target.files[0])
 					.then((text) => {
 						let abstract: string = "";
@@ -44,134 +51,153 @@ export default function SingleResourceUploader({
 							abstract = text?.slice(0, 500) + "...";
 						}
 						setAbstract(abstract);
-
 						setTextFile(text);
 						setStatus("initial");
 					})
-					.catch((error) => console.error(error));
+					.catch((error) => {
+						console.error(error);
+						setStatus("fail");
+					});
+			}
 		}
 	};
 
 	const handleUpload = async () => {
-		console.log(qaBoxId);
 		if (textFile && file) {
 			setStatus("uploading");
-			(qaBoxId
-				? postCreateQABoxResourceAction({
-						text_source: textFile,
-						name: file.name,
-						type: "pdf",
-						qaBoxId,
-				  })
-				: postCreateResourceAction({
-						text_source: textFile,
-						name: file.name,
-						type: "pdf",
-				  })
-			)
-				.then((res) => {
-					mutate();
-					setFile(null);
-					setStatus("success");
-				})
-				.catch((error) => {
-					setStatus("fail");
-				});
+			try {
+				await (qaBoxId
+					? postCreateQABoxResourceAction({
+							text_source: textFile,
+							name: file.name,
+							type: "pdf",
+							qaBoxId,
+					  })
+					: postCreateResourceAction({
+							text_source: textFile,
+							name: file.name,
+							type: "pdf",
+					  }));
+
+				mutate();
+				setFile(null);
+				setAbstract(null);
+				setTextFile(null);
+				setStatus("success");
+
+				// Reset success status after 2 seconds
+				setTimeout(() => {
+					setStatus("initial");
+				}, 2000);
+			} catch (error) {
+				setStatus("fail");
+			}
 		} else {
 			setStatus("fail");
 		}
 	};
+
+	const clearFile = () => {
+		setFile(null);
+		setAbstract(null);
+		setTextFile(null);
+		setStatus("initial");
+		if (inputFileRef.current) {
+			inputFileRef.current.value = "";
+		}
+	};
+
 	return (
-		<div>
-			<div className="input-group mx-auto max-w-[500px] flex border-4 bg-white rounded border-primary p-2">
+		<div className="p-4 space-y-4">
+			<div className="flex items-center gap-4">
+				<button
+					onClick={() => inputFileRef.current?.click()}
+					className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary bg-white border border-action/20 rounded-md hover:bg-action/5 hover:border-action/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action/20"
+				>
+					<FilePlus2 size={16} className="text-action" />
+					Choose PDF
+				</button>
 				<input
 					ref={inputFileRef}
 					className="hidden"
 					id="file"
 					type="file"
+					accept=".pdf"
 					onChange={handleFileChange}
 				/>
-				<button
-					className="flex items-center justify-center px-1"
-					onClick={() => inputFileRef.current?.click()}
-				>
-					<FilePlus2
-						className={`${
-							file
-								? file.type === "application/pdf"
-									? "stroke-green-300"
-									: "stroke-customred"
-								: "stroke-mygray"
-						} fill-primary`}
-						size={30}
-					/>
-				</button>
-				<div className="flex items-center justify-center border-s-4 ps-2 border-primary">
-					{status !== "fail" ? (
-						file ? (
-							file.name
-						) : (
-							"No file selected"
-						)
-					) : (
-						<p className="text-customred"> File upload failed!</p>
-					)}
-				</div>
+				{file && (
+					<div className="flex-1 flex items-center justify-between px-3 py-2 bg-main rounded-md border border-action/10">
+						<div className="flex items-center gap-2">
+							<FileIcon size={16} className="text-action/70" />
+							<span className="text-sm text-primary">{file.name}</span>
+						</div>
+						<button
+							onClick={clearFile}
+							className="p-1 hover:bg-action/10 rounded-full"
+						>
+							<XIcon size={14} className="text-mygray" />
+						</button>
+					</div>
+				)}
 			</div>
-			{file && (
-				<div className="max-w-2xl mx-auto my-5">
-					<section>
-						<p className=" font-bold text-xl">File details:</p>
-						<ul className="px-4  flex gap-2 flex-wrap ">
-							<li>
-								<span className="font-bold">Name: </span>
-								{file.name}
-							</li>
-							<li>
-								<span className="font-bold">Type:</span> {file.type}
-							</li>
-							<li>
-								<span className="font-bold">Size:</span> {file.size} bytes
-							</li>
-							{abstract && (
-								<li className=" basis-full">
-									<span className="font-bold">Pdf Content:</span>
-									<div className="p-2 bg-main border-4 border-primary rounded-[8px] max-h-56 overflow-y-auto">
-										{abstract}
-									</div>
-								</li>
-							)}
-							{status === "reading" && <p>⏳ Reading selected file...</p>}
-						</ul>
-					</section>
+
+			{status === "reading" && (
+				<div className="flex items-center gap-2 text-sm text-action">
+					<div className="animate-spin">
+						<UploadIcon size={16} />
+					</div>
+					Reading PDF content...
+				</div>
+			)}
+
+			{file && abstract && (
+				<div className="space-y-3">
+					<div className="p-4 bg-main rounded-md border border-action/10">
+						<h4 className="text-sm font-medium text-primary mb-2">Preview</h4>
+						<div className="text-sm text-mygray max-h-32 overflow-y-auto scrollbar-custom">
+							{abstract}
+						</div>
+					</div>
 
 					{file.type === "application/pdf" && (
-						<button
-							onClick={handleUpload}
-							className="submit flex p-1 items-center justify-center capitalize font-bold text-action"
-						>
-							<UploadIcon size={25} className="text-action" />
-							Add source
-						</button>
+						<div className="flex justify-end">
+							<button
+								onClick={handleUpload}
+								disabled={status === "uploading"}
+								className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-action rounded-md hover:bg-action/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action disabled:opacity-50 disabled:hover:bg-action"
+							>
+								{status === "uploading" ? (
+									<>
+										<div className="animate-spin">
+											<UploadIcon size={16} />
+										</div>
+										Uploading...
+									</>
+								) : (
+									<>
+										<UploadIcon size={16} />
+										Add Resource
+									</>
+								)}
+							</button>
+						</div>
 					)}
 				</div>
 			)}
 
-			<Result status={status} />
+			{status === "success" && (
+				<div className="flex items-center gap-2 text-sm text-[#22c55e]">
+					<CheckCircle size={16} />
+					File uploaded successfully!
+				</div>
+			)}
+
+			{status === "fail" && (
+				<div className="flex items-center gap-2 text-sm text-customred">
+					<AlertCircle size={16} />
+					File upload failed. Please try again.
+				</div>
+			)}
 		</div>
 	);
 }
-
-const Result = ({ status }: { status: string }) => {
-	if (status === "success") {
-		return <p>✅ File uploaded successfully!</p>;
-	} else if (status === "fail") {
-		return <p>❌ File upload failed!</p>;
-	} else if (status === "uploading") {
-		return <p>⏳ Uploading selected file...</p>;
-	} else if (status === "reading") {
-		return <p>⏳ Reading selected file...</p>;
-	} else {
-		return null;
-	}
-};

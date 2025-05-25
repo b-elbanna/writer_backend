@@ -68,7 +68,7 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
 				// style={{ outline: "none" ,
 				// 	maxHeight:
 				// }}
-				className="relative bg-main grow overflow-y-auto shadow[inset_0_5px_15px_-3px_rgba(0,0,0,0.1)] p-4 py-28 pb-44 sm:px-6 md:px-8 lg:px-10 w-full "
+				className="relative grow overflow-y-auto  p-4 py-28 pb-44 sm:px-6 md:px-8 lg:px-10 w-full "
 			>
 				{children}
 

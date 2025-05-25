@@ -21,12 +21,25 @@ export default function CustomModal({
 			</DialogTrigger>
 
 			<DialogContent
-				className=" md:min-w-[600px] lg:min-w-[800px] xl:min-w-[1024px] "
+				className="md:min-w-[600px] lg:min-w-[800px] xl:min-w-[1024px] bg-gradient-to-b from-white to-gray-50"
 				onPointerDownOutside={(e) => e.preventDefault()}
 			>
-				<DialogTitle>{title}</DialogTitle>
-				<DialogDescription>{description}</DialogDescription>
-				{modalPopUpContent}
+				<div className="relative">
+					{/* Close button */}
+
+					{/* Header */}
+					<div className="mb-8 text-center sm:text-left">
+						<DialogTitle className="mb-2">{title}</DialogTitle>
+						<DialogDescription className="text-gray-500">
+							{description}
+						</DialogDescription>
+					</div>
+
+					{/* Content */}
+					<div className="max-h-[80vh] overflow-y-auto px-1 py-4">
+						{modalPopUpContent}
+					</div>
+				</div>
 			</DialogContent>
 		</Dialog>
 	);

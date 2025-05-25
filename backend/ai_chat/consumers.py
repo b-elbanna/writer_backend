@@ -24,6 +24,7 @@ class ChatConsumer(JsonWebsocketConsumer):
         """
         {"messages":[{"role":"user","content":"hi"}],"model":"gpt_4","source_text":"text content"}
         """
+        print("messege recived  ")
         source_text: list[dict[str, str]] | None = res.get("source_text", None)
         messages: list[dict[str, str]] | None = res.get("messages", None)
 

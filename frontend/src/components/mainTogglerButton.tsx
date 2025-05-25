@@ -12,18 +12,31 @@ export default function MainTogglerButton({
 	Icon2: ReactNode;
 }) {
 	return (
-		<div className="border shadow-md p-1 z-10 bg-main  rounded-full inline-flex items-center cursor-pointer">
+		<div
+			className={`
+				relative bg-white border rounded-full inline-flex items-center cursor-pointer w-9 h-9
+				transition-all duration-200 ease-in-out
+				${
+					toggledValue
+						? "border-green-400 shadow-[0_0_0_1px_rgba(74,222,128,0.2)] hover:shadow-[0_0_0_2px_rgba(74,222,128,0.3)]"
+						: "border-gray-200 shadow-sm hover:border-gray-300"
+				}
+			`}
+		>
 			<div
 				onClick={toggleFn}
-				className={` group relative  flex justify-between items-center outline-none duration-100  peer-focus:outline-none`}
+				className="w-full h-full relative flex justify-center items-center outline-none"
 			>
-				{Icon1}
-				{Icon2}
+				<div className="relative z-20 flex justify-center items-center w-full h-full">
+					{toggledValue ? Icon1 : Icon2}
+				</div>
 				<span
-					className={`${!toggledValue && " translate-x-[-100%] bg-mygray "}${
-						toggledValue && " bg-green-300 "
-					} duration-500 absolute border-black  border-2 group-active:bg-black   rounded-full h-[25px] w-[25px]  right-0 flex justify-center items-center font-bold`}
-				></span>
+					className={`
+						absolute inset-0 rounded-full
+						transition-all duration-300 ease-in-out z-10
+						${toggledValue ? "bg-green-50" : "bg-gray-50"}
+					`}
+				/>
 			</div>
 		</div>
 	);

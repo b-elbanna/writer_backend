@@ -5,31 +5,47 @@ import {
 	FileQuestionIcon,
 } from "lucide-react";
 
-const writtingToolsData: {
+export interface WritingTool {
 	id: number;
 	name: string;
 	description: string;
 	Icon: any;
-}[] = [
-	{ id: 0, name: "editor", description: "smart text editor", Icon: EditIcon },
+	category: "editor" | "ai" | "resources";
+	shortcut?: string;
+}
+
+const writtingToolsData: WritingTool[] = [
+	{
+		id: 0,
+		name: "Editor",
+		description: "Smart text editor with AI assistance",
+		Icon: EditIcon,
+		category: "editor",
+		shortcut: "Ctrl+E",
+	},
 	{
 		id: 1,
-		name: "chatbox",
-		description: "chat with latest AI models",
+		name: "AI Chat",
+		description: "Interact with advanced AI models",
 		Icon: BotIcon,
+		category: "ai",
+		shortcut: "Ctrl+I",
 	},
-
 	{
 		id: 2,
-		name: "resources",
-		description: "search for papers",
+		name: "Resources",
+		description: "Search and manage research papers",
 		Icon: FilePlus2Icon,
+		category: "resources",
+		shortcut: "Ctrl+R",
 	},
 	{
 		id: 3,
-		name: "qabox",
-		description: "search for answers in your resources",
+		name: "Q&A",
+		description: "Find answers in your resources",
 		Icon: FileQuestionIcon,
+		category: "resources",
+		shortcut: "Ctrl+Q",
 	},
 ];
 

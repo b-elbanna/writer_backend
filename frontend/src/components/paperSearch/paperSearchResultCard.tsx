@@ -1,8 +1,9 @@
 "use client";
 import { getInternetArchiveItemPdfUrl } from "@/utils/searchUtils/searchInInternetArchiveUtils";
 import { useEffect, useState } from "react";
-import { ExternalLinkIcon, FileTextIcon } from "lucide-react";
+import { BookOpen, ExternalLink, FileText } from "lucide-react";
 import dateObjFromIsoStr from "@/utils/datTimeRep";
+import { SimpleTooltip } from "../simpleTooltip";
 
 function PaperInfo({
 	pdfUrl,
@@ -30,49 +31,53 @@ function PaperInfo({
 	}, []);
 
 	return (
-		<div className=" justify-between flex flex-wrap gap-1 py-2">
-			<div className="paper-buttons flex gap-1 ">
-				{(pdfUrl || createdPdfUrl) && (
-					<button
-						className="text-active "
-						onClick={async () => {
-							window.open(pdfUrl || createdPdfUrl, "_blank");
-						}}
-					>
-						<FileTextIcon width={25} height={25} strokeWidth={2} />
-					</button>
-				)}
-				<div className="h-full border-l-4 border-primary "></div>
-				{url && (
-					<button
-						className="text-active "
-						onClick={async () => {
-							window.open(url, "_blank");
-						}}
-					>
-						<ExternalLinkIcon width={25} height={25} strokeWidth={2} />
-					</button>
+		<div className="flex items-center justify-between flex-wrap gap-4 py-3">
+			<div className="flex items-center gap-6">
+				<div className="flex items-center gap-3">
+					{(pdfUrl || createdPdfUrl) && (
+						<SimpleTooltip tooltip="Open PDF" delay={0}>
+							<button
+								className="p-2 rounded-md text-action/70 hover:text-action hover:bg-action/5 transition-colors"
+								onClick={() => window.open(pdfUrl || createdPdfUrl, "_blank")}
+							>
+								<FileText size={18} />
+							</button>
+						</SimpleTooltip>
+					)}
+					{url && (
+						<SimpleTooltip tooltip="Visit Source" delay={0}>
+							<button
+								className="p-2 rounded-md text-action/70 hover:text-action hover:bg-action/5 transition-colors"
+								onClick={() => window.open(url, "_blank")}
+							>
+								<ExternalLink size={18} />
+							</button>
+						</SimpleTooltip>
+					)}
+				</div>
+				{publisher && (
+					<div className="text-sm text-mygray flex items-center gap-2">
+						<BookOpen size={14} className="text-mygray/70" />
+						{publisher}
+					</div>
 				)}
 			</div>
-			{!published && !publisher && (
-				<a className="text-sm flex justify-center items-end" href={url}>
-					{url}
-				</a>
-			)}
-
-			{publisher && (
-				<div className="text-sm flex justify-center items-end text-mygray">
-					{publisher}
-				</div>
-			)}
-			<div>from: {source?.toUpperCase()}</div>
-			{published && (
-				<div className="text-sm flex justify-center items-end text-mygray">
-					{dateObjFromIsoStr(published).getDate()}-
-					{dateObjFromIsoStr(published).getMonth()}-
-					{dateObjFromIsoStr(published).getFullYear()}
-				</div>
-			)}
+			<div className="flex items-center gap-4 text-xs">
+				{source && (
+					<div className="px-2 py-1 rounded-full bg-main border border-action/10 text-mygray">
+						{source.toUpperCase()}
+					</div>
+				)}
+				{published && (
+					<time className="text-mygray">
+						{dateObjFromIsoStr(published).toLocaleDateString("en-US", {
+							year: "numeric",
+							month: "short",
+							day: "numeric",
+						})}
+					</time>
+				)}
+			</div>
 		</div>
 	);
 }
@@ -90,11 +95,26 @@ export default function PaperSearchResultCard({
 	const [expandResult, setExpandResult] = useState(false);
 
 	return (
-		<div className="relative w-full  mb-6 last-of-type:m-0   group">
-			<div className="mb-2  ">
-				<h3 className="  font-bold text-primary text-2xl md:text-3xl">
+		<div className="group">
+			<div className="relative bg-white rounded-lg border border-action/10 p-4 transition-shadow duration-300 hover:shadow-md">
+				<h3 className="font-semibold text-lg text-primary leading-tight mb-3">
 					{title}
 				</h3>
+
+				{summary && (
+					<p className="text-sm text-mygray mb-4 transition-all duration-300">
+						{expandResult ? summary : summary.slice(0, 280)}
+						{summary.length > 280 && (
+							<button
+								className="ml-2 text-action hover:text-action/80 font-medium"
+								onClick={() => setExpandResult(!expandResult)}
+							>
+								{expandResult ? "Show Less" : "Read More"}
+							</button>
+						)}
+					</p>
+				)}
+
 				<PaperInfo
 					published={published}
 					source={source}
@@ -104,18 +124,6 @@ export default function PaperSearchResultCard({
 					identifier={identifier}
 				/>
 			</div>
-			<p className="  pb-4">
-				{expandResult && summary ? summary : summary?.slice(0, 200)}
-				{summary && summary?.length > 200 && (
-					<button
-						className="text-sm text-active font-semibold"
-						onClick={() => setExpandResult(!expandResult)}
-					>
-						{expandResult ? " |See Less" : "...Read More"}
-					</button>
-				)}
-			</p>
-			<div className="absolute bottom-0 mx-auto w-1/2 group-hover:w-full transition-all border-b-primary border-2"></div>
 		</div>
 	);
 }

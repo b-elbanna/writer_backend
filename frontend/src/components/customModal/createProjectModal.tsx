@@ -1,6 +1,5 @@
 import React from "react";
 import { Plus } from "lucide-react";
-import { CustomButton } from "../forms/formFiels/customButton";
 
 import CreateProjectForm from "@/components/forms/createProjectForm/createProjectForm";
 import CustomModal from "./customModal";
@@ -14,19 +13,10 @@ export default function CreateProjectModal() {
 			description={<CreateProjectModalDescription />}
 			modalPopUpContent={<CreateProjectForm />}
 			customButton={
-				<CustomButton
-					onClickFunc={() => {
-						// setOpen(true);
-						console.log("show popup");
-					}}
-					children={
-						<>
-							<Plus size={20} />
-							New Project
-						</>
-					}
-					className=" !flex gap-1 p-1  text-sm  "
-				/>
+				<button className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-lg hover:shadow-xl active:shadow-md">
+					<Plus className="w-5 h-5 animate-pulse" />
+					<span className="font-medium">New Project</span>
+				</button>
 			}
 		/>
 	);

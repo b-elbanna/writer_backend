@@ -15,34 +15,39 @@ export default function QABoxResult({
 		const textToCopy = divRef?.current?.textContent;
 		textToCopy && navigator.clipboard.writeText(textToCopy);
 	}, []);
+
 	return (
-		<div
-			key={relatedness}
-			className="shadow-xl w-fit max-w-[90%] my-8 px-4 py-2 border-primary border-4 bg-main mx-auto  rounded-[8px] group"
-		>
-			<div ref={divRef} className="whitespace-pre-line overflow-x-auto">
-				{answerParagraph} ||
+		<div className="bg-gray-50 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-200">
+			<div
+				ref={divRef}
+				className="text-sm text-gray-700 whitespace-pre-line break-words"
+			>
+				{answerParagraph}
 			</div>
-			<div className="flex gap-3 pt-2 justify-between">
-				<p className="text-mygray text-sm ">
-					{sourceName} || {relatedness}
+			<div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
+				<p className="text-xs text-gray-500 flex items-center gap-2">
+					<span className="font-medium">{sourceName}</span>
+					<span className="text-gray-400">•</span>
+					<span>Score: {relatedness}</span>
 				</p>
-				<div className="flex gap-3">
+				<div className="flex gap-2">
 					<SimpleTooltip delay={200} tooltip="Add to editor">
 						<button
+							className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
 							onClick={() => {
 								// handelAddToEditor();
 							}}
 						>
 							<BookUp2
-								size={20}
-								className="stroke-action active:fill-primary "
+								size={16}
+								className="stroke-gray-600 active:stroke-primary"
 							/>
 						</button>
 					</SimpleTooltip>
 
 					<SimpleTooltip delay={0} tooltip={isCopied ? "Copied" : "Copy text"}>
 						<button
+							className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
 							onClick={() => {
 								handelCopyText();
 								if (!isCopied) {
@@ -54,11 +59,11 @@ export default function QABoxResult({
 							}}
 						>
 							{isCopied ? (
-								<CopyCheck size={20} className="stroke-action " />
+								<CopyCheck size={16} className="stroke-green-600" />
 							) : (
 								<CopyIcon
-									size={20}
-									className="stroke-action active:fill-action "
+									size={16}
+									className="stroke-gray-600 active:stroke-primary"
 								/>
 							)}
 						</button>

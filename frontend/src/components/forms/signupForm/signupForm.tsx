@@ -1,39 +1,50 @@
 "use client";
-
 import { Form } from "react-final-form";
 import React from "react";
-import { validateLoginForm } from "./utils";
-
+import { validateSignupForm } from "./utils";
+import SmileFaceLoader from "@/loaders/smileFace/smileFace";
 import Link from "next/link";
 import TextInput from "../formFiels/textInputField";
 import { PasswordInput } from "../formFiels/passwordInput";
 import FormButton from "../formFiels/formButton";
-import SmileFaceLoader from "@/loaders/smileFace/smileFace";
-import { useOnSubmitLogin } from "@/utils/hooks/onSubmitLoginHook";
+import { SignupFormDataInterface } from "@/endpointActions/postSignupAction";
+import { useOnSubmitSignup } from "@/utils/hooks/onSubmitSignupHook";
 
-export default function LoginForm() {
-	const { onSubmitLogin } = useOnSubmitLogin();
+export interface Values extends SignupFormDataInterface {
+	confirmPassword: string;
+}
+
+export default function SignupForm() {
+	// let router = useRouter();
+	const { onSubmitSignup } = useOnSubmitSignup();
 
 	return (
 		<div className="w-full">
 			<Form
-				onSubmit={onSubmitLogin}
-				validate={validateLoginForm}
-				initialValues={{}}
-				render={({
-					handleSubmit,
-					submitSucceeded,
-					submitting,
-					values,
-					submitError,
-				}) => {
-					return submitting || submitSucceeded ? (
+				onSubmit={onSubmitSignup}
+				validate={validateSignupForm}
+				render={({ handleSubmit, errors, submitError, submitting, values }) => {
+					return submitting ? (
 						<div className="w-full flex justify-center items-center py-12">
 							<SmileFaceLoader className="transform scale-150" />
 						</div>
 					) : (
 						<form onSubmit={handleSubmit} className="w-full space-y-6">
+							{" "}
 							<div className="space-y-6">
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+									<TextInput
+										label="First Name"
+										name="first_name"
+										values={values}
+									/>
+									<TextInput
+										label="Last Name"
+										name="last_name"
+										values={values}
+									/>
+								</div>
+
 								<TextInput label="Email" name="email" values={values} />
 
 								<PasswordInput
@@ -41,15 +52,21 @@ export default function LoginForm() {
 									name="password"
 									values={values}
 								/>
+
+								<PasswordInput
+									label="Confirm Password"
+									name="confirmPassword"
+									values={values}
+								/>
 							</div>
 							{submitError && (
 								<div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
 									{submitError}
 								</div>
-							)}{" "}
+							)}
 							<div className="space-y-6">
 								<FormButton
-									label="Sign In"
+									label="Create Account"
 									submitting={submitting}
 									className="bg-action hover:bg-action/90 text-white shadow-md"
 								/>
@@ -88,17 +105,17 @@ export default function LoginForm() {
 												d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
 											/>
 										</svg>
-										Sign in with Google
+										Sign up with Google
 									</button>
 								</div>
 
 								<div className="flex justify-center gap-2 text-sm text-gray-600">
-									<span>Don't have an account?</span>
+									<span>Already have an account?</span>
 									<Link
-										href="/signup"
+										href="/login"
 										className="font-medium text-action hover:text-action/80 transition-colors"
 									>
-										Sign up
+										Log in
 									</Link>
 								</div>
 							</div>
@@ -106,6 +123,9 @@ export default function LoginForm() {
 					);
 				}}
 			/>
+			{/* <div className="relative h-[20px] overflow-hidden">
+                <span className={styles.formAnimation}></span>
+            </div> */}
 		</div>
 	);
 }

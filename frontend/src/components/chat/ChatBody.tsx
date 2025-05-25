@@ -1,11 +1,5 @@
 "use client";
-import React, {
-	Fragment,
-	useCallback,
-	useContext,
-	useEffect,
-	useState,
-} from "react";
+import React, { Fragment, useContext, useEffect } from "react";
 import UserMessage from "./UserMessage";
 import AssistantMessage from "./AssistantMessage";
 import { LastMessageContext } from "./MessagesProvider";
@@ -65,11 +59,7 @@ export default function ChatBody({
 	}, [lastSocketMessage]);
 
 	useEffect(() => {
-		if (
-			body.current &&
-			body.current?.scrollHeight - body.current?.scrollTop >
-				body.current?.clientHeight + 100
-		) {
+		if (body.current) {
 			body.current?.scrollTo(0, body.current.scrollHeight);
 			console.log("scrolling");
 		}
@@ -77,7 +67,7 @@ export default function ChatBody({
 	return (
 		<div
 			ref={body}
-			className=" flex-1 h-full w-full mx-auto overflow-x-hidden  overflow-y-auto px-5 "
+			className="flex-1 h-full w-full max-w-4xl mx-auto overflow-x-hidden overflow-y-auto px-4 md:px-6 py-4 space-y-6 scroll-smooth scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
 		>
 			{currentChatbox.chatbox.messages &&
 				currentChatbox.chatbox.messages.map((message, index: number) => {
@@ -133,7 +123,7 @@ export default function ChatBody({
 					/>
 				</>
 			)}
-			<div className=" h-[150px]"></div>
+			<div className="h-48" /> {/* Reduced bottom spacing */}
 		</div>
 	);
 }

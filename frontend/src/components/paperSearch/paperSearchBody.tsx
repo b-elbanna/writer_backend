@@ -17,8 +17,6 @@ export default function PaperSearchBody() {
 	const scopusSearchData = useAppSelector((state) => state.scopusSearchData);
 	const EPMCSearchData = useAppSelector((state) => state.EPMCSearchData);
 
-	// useEffect(() => {}, [papersSearchData]);
-
 	//  if all search data is init
 	if (
 		papersSearchData.status === "init" &&
@@ -35,10 +33,11 @@ export default function PaperSearchBody() {
 						powered By Arxiv
 					</div>
 				}
-				label="Label"
+				label="Scientific Paper Search"
 				description="Search more than 25 million Scientific Papers!"
 			/>
 		);
+
 	// if all search data is pending
 	if (
 		papersSearchData.status === "pending" &&
@@ -49,18 +48,82 @@ export default function PaperSearchBody() {
 		EPMCSearchData.status === "pending"
 	)
 		return <SearchLoaderPage />;
-	else {
-		return (
-			<>
-				<PaperSearchResults papersSearchData={arxivSearchData} />;
-				<PaperSearchResults papersSearchData={EPMCSearchData} />;
-				<PaperSearchResults papersSearchData={synthicalSearchData} />;
-				<PaperSearchResults papersSearchData={archiveSearchData} />;
-				<PaperSearchResults papersSearchData={scopusSearchData} />;
-				<PaperSearchResults papersSearchData={papersSearchData} />;
-			</>
-		);
-	}
+
+	return (
+		<div className="space-y-8">
+			{arxivSearchData.value.length > 0 && (
+				<div>
+					<h3 className="text-sm font-medium text-mygray mb-4 flex items-center gap-2">
+						Results from arXiv
+						{arxivSearchData.status === "pending" && (
+							<div className="animate-pulse w-2 h-2 rounded-full bg-action"></div>
+						)}
+					</h3>
+					<PaperSearchResults papersSearchData={arxivSearchData} />
+				</div>
+			)}
+
+			{EPMCSearchData.value.length > 0 && (
+				<div>
+					<h3 className="text-sm font-medium text-mygray mb-4 flex items-center gap-2">
+						Results from Europe PMC
+						{EPMCSearchData.status === "pending" && (
+							<div className="animate-pulse w-2 h-2 rounded-full bg-action"></div>
+						)}
+					</h3>
+					<PaperSearchResults papersSearchData={EPMCSearchData} />
+				</div>
+			)}
+
+			{synthicalSearchData.value.length > 0 && (
+				<div>
+					<h3 className="text-sm font-medium text-mygray mb-4 flex items-center gap-2">
+						Results from Synthical
+						{synthicalSearchData.status === "pending" && (
+							<div className="animate-pulse w-2 h-2 rounded-full bg-action"></div>
+						)}
+					</h3>
+					<PaperSearchResults papersSearchData={synthicalSearchData} />
+				</div>
+			)}
+
+			{archiveSearchData.value.length > 0 && (
+				<div>
+					<h3 className="text-sm font-medium text-mygray mb-4 flex items-center gap-2">
+						Results from Internet Archive
+						{archiveSearchData.status === "pending" && (
+							<div className="animate-pulse w-2 h-2 rounded-full bg-action"></div>
+						)}
+					</h3>
+					<PaperSearchResults papersSearchData={archiveSearchData} />
+				</div>
+			)}
+
+			{scopusSearchData.value.length > 0 && (
+				<div>
+					<h3 className="text-sm font-medium text-mygray mb-4 flex items-center gap-2">
+						Results from Scopus
+						{scopusSearchData.status === "pending" && (
+							<div className="animate-pulse w-2 h-2 rounded-full bg-action"></div>
+						)}
+					</h3>
+					<PaperSearchResults papersSearchData={scopusSearchData} />
+				</div>
+			)}
+
+			{papersSearchData.value.length > 0 && (
+				<div>
+					<h3 className="text-sm font-medium text-mygray mb-4 flex items-center gap-2">
+						Additional Results
+						{papersSearchData.status === "pending" && (
+							<div className="animate-pulse w-2 h-2 rounded-full bg-action"></div>
+						)}
+					</h3>
+					<PaperSearchResults papersSearchData={papersSearchData} />
+				</div>
+			)}
+		</div>
+	);
 }
 
 function PaperSearchResults({
@@ -68,31 +131,8 @@ function PaperSearchResults({
 }: {
 	papersSearchData: PapersSearchData;
 }) {
-	const [sortedPapers, setSortedPapers] = useState();
-	const [sorted, setSorted] = useState(false);
-	// /////////////////////////
-	// star sort by relatedness
-	// useEffect(() => {
-	// 	sortByRelatedness(
-	// 		papersSearchData.query,
-	// 		papersSearchData.value.map((paper) => paper.title)
-	// 	).then((relatednesses) => {
-	// 		relatednesses;
-	// 		let sortedPapers: PaperSearchDataInerface[] = [];
-	// 		for (let res of relatednesses) {
-	// 			const [title, rate] = res;
-	// 			for (let paper of papersSearchData.value) {
-	// 				if (paper.title === title) {
-	// 					sortedPapers.push(paper);
-	// 				}
-	// 			}
-	// 		}
-	// 		setSortedPapers(sortedPapers);
-	// }, [papersSearchData]);
-	// end sort by relatedness
-	// /////////////////////////
 	return (
-		<div className="p-5 transition-all duration-300">
+		<div className="space-y-6 animate-in fade-in duration-500">
 			{papersSearchData.value.map((result, i) => {
 				return (
 					(result.pdfUrl || result.url) && (

@@ -20,6 +20,7 @@ import { getArchiveSearch } from "@/rtk/slices/articleResources/archiveSearch";
 import { getEPMCSearch } from "@/rtk/slices/articleResources/EPMCSearch";
 import { getScopusSearch } from "@/rtk/slices/articleResources/scopusSearch";
 import { getSynthicalSearch } from "@/rtk/slices/articleResources/synthicalSearch";
+import ActiveResourcesTogglerButton from "../functionBar/activeResourcesTogglerButton";
 type ChatInputProps = {
 	chatId: string;
 	setQAResults?: React.Dispatch<React.SetStateAction<QABoxAnswerInterface[]>>;
@@ -159,7 +160,7 @@ export default function ChatInput({
 	}, [inputContent]);
 
 	return (
-		<div className=" absolute bottom-0 bg-gradient-to-t from-white to-transparent w-full px-10  py-3 z-20  ">
+		<div className=" absolute bottom-0 left-0 bg-gradient-to-t from-white to-transparent w-full px-10  py-3 z-20  ">
 			<div className="flex items-center justify-center rounded-3xl p-2 shadow-2xl bg-primary m-auto">
 				<RecordView
 					inputRef={contentEditableRef}
@@ -179,6 +180,11 @@ export default function ChatInput({
 						}}
 						onBlur={handelBlurEvent}
 					></div>
+					{currentUserProject.value.qaBox && (
+						<div className="pl-3 border-l border-gray-200">
+							<ActiveResourcesTogglerButton />
+						</div>
+					)}
 					<p
 						onMouseEnter={() => contentEditableRef.current?.focus()}
 						onClick={() => contentEditableRef.current?.focus()}

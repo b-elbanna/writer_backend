@@ -4,12 +4,12 @@
 
 :root {
 	/* text variables */
-	--base-color: hsl(0, 0%, 99%);
+	--base-color: #fcfcfc;
 	--gray-color: #9f9f9f;
-	--primary-color: hsl(75, 5%, 15%);
+	--primary-color: #272824;
 	--secondary-color: #522529;
 	--third-color: #7d232f;
-	--action-color: #a92135;
+	--action-color: #aa2236;
 	/* --text-primary: #f3f4f6;
   --text-secondary: #65a30d;
   --text-hover: rgb(161, 230, 51); */
@@ -25,6 +25,8 @@
 
 		--card: 0 0% 100%;
 		--card-foreground: 75, 5%, 15%;
+
+		--action: 351 67% 40%;
 
 		--popover: 0 0% 100%;
 		--popover-foreground: 75, 5%, 15%;
