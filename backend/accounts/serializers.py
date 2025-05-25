@@ -31,12 +31,19 @@ class MyRegisterSerializer(RegisterSerializer):
     password1 = password
     first_name = serializers.CharField()
     last_name = serializers.CharField()
+    email = serializers.EmailField(required=True, allow_blank=False)
 
     def get_cleaned_data(self):
         data = super().get_cleaned_data()
         data["first_name"] = self.validated_data.get("first_name", "")
         data["last_name"] = self.validated_data.get("last_name", "")
         return data
+        # make email unique and required
+
+    def validate_email(self, value):
+        if get_user_model().objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email already exists.")
+        return value
 
     def validate(self, data):
         return data
@@ -58,4 +65,4 @@ class MyUserDetailsSerializer(UserDetailsSerializer):
         extra_fields.append("user_credits")
         extra_fields.append("is_staff")
         fields = ("pk", *extra_fields)
-        read_only_fields = ("email", "is_staff","user_credits")
+        read_only_fields = ("email", "is_staff", "user_credits")
