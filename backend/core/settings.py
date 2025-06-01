@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env.str("SECRET_KEY")
 OPENAI_KEY = env.str("OPENAI_KEY")
 SPRINGER_KEY = env.str("SPRINGER_KEY")
-DB_PASSWORD = env.str("DB_PASSWORD")
+# DB_PASSWORD = env.str("DB_PASSWORD")
 
 
 DEBUG = env.bool("DEBUG", default=False)
