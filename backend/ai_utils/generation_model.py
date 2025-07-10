@@ -7,7 +7,7 @@ class GenerationModel:
     """Facade class for interacting with different AI models."""
 
     def __init__(
-        self, provider: Literal["gemini", "openai"] = "gemini", model: str = None
+        self, provider: Literal["gemini", "openai"] = "gemini", model: str = ""
     ):
         self.provider = provider
         self.model = model
@@ -18,13 +18,11 @@ class GenerationModel:
         else:
             raise ValueError(f"Invalid provider: {provider}")
 
-    def chat_completion(
-        self, messages: List[Dict[str, str]], system_message: str = None
-    ):
+    def chat_completion(self, messages: List[Dict[str, str]], system_message: str = ""):
         return self.model_instance.chat_completion(messages, system_message)
 
     def streamed_chat_completion(
-        self, messages: List[Dict[str, str]], system_message: str = None
+        self, messages: List[Dict[str, str]], system_message: str = ""
     ):
         return self.model_instance.streamed_chat_completion(messages, system_message)
 
@@ -46,7 +44,7 @@ class GenerationModel:
         self,
         text: str,
         article_title: str,
-        article_outline: str = None,
+        article_outline: str = "",
         max_tokens: int = 200,
     ):
         return self.model_instance.text_completion(

@@ -69,7 +69,7 @@ class GeminiModel(BaseGenerationModel):
             raise RuntimeError(f"Gemini API error: {e}")
 
     def streamed_chat_completion(
-        self, messages: List[Dict[str, str]], system_message: str = None
+        self, messages: List[Dict[str, str]], system_message: str = ""
     ):
         try:
             response = self.client.models.generate_content_stream(

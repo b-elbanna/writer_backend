@@ -41,6 +41,7 @@ class GetArticleDescriptionView(GenericAPIView):
 
 
 class ArticleOutlineView(GenericAPIView):
+
     serializer_class = ArticleOutlineSerializer
 
     def get_queryset(self):

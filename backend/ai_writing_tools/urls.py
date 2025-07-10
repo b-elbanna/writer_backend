@@ -12,22 +12,23 @@ from .tools_views import (
     TextImprovementView,
     TextCompletionView,
     ArticleOutlineView,
-    GetArticleDescriptionView,
 )
+from .apis.views import GetArticleDescriptionView
+
 
 urlpatterns = [
     # text improvement services
+    path(
+        "tools/article-description",
+        GetArticleDescriptionView.as_view(),
+        name="article_description",
+    ),
     path(
         "sort-by-relatedness",
         SortByRelatednessView.as_view(),
         name="sort_by_relatedness",
     ),
     path("tools/article-outline", ArticleOutlineView.as_view(), name="article_outline"),
-    path(
-        "tools/article-description",
-        GetArticleDescriptionView.as_view(),
-        name="article_description",
-    ),
     path("tools/improvement", TextImprovementView.as_view(), name="improvement"),
     path("tools/completion", TextCompletionView.as_view(), name="completion"),
     # projects or articles

@@ -43,7 +43,7 @@ def calc_credits(operation: str, n_tokens, model=None):
 
 
 class Credit:
-
+    @staticmethod
     def calc(operation: str, n_tokens, model=None):
         """
         Operation:
