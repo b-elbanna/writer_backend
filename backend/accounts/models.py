@@ -14,3 +14,4 @@ class CustomUser(AbstractUser):
     )
     country = models.CharField(max_length=50, null=True, blank=None)
     user_credits = models.IntegerField(default=100000)
+    google_api_key = models.CharField(max_length=200, null=True, blank=False)

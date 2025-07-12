@@ -40,7 +40,7 @@ class BaseGenerationModel(ABC):
     audio_transcription_model: str
     client: genai.Client | OpenAI
 
-    def __init__(self, model: str = None):
+    def __init__(self, model=None, api_key=None):
         self.model = model or self.default_model
         if self.model not in self.available_models:
             raise ValueError(

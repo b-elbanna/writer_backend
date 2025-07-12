@@ -118,7 +118,8 @@ Your task is to generate possible descriptions for a given article title. Follow
 
 Example:
 
-Article Title: "The Future of Renewable Energy"
+Title: "The Future of Renewable Energy"
+Language: "English"
 
 JSON Response:
 [

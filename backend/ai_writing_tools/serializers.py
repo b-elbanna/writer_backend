@@ -105,11 +105,18 @@ class ProjectListCreateSerializer(serializers.ModelSerializer):
     lang = serializers.ChoiceField(choices=[("en", "English"), ("ar", "Arabic")])
     used_credits = serializers.IntegerField(read_only=True)
     user_name = serializers.CharField(source="user.username", read_only=True)
-    outline = serializers.JSONField(write_only=True)
+    outline = serializers.JSONField(write_only=True, required=False)
+    article_text = serializers.CharField(write_only=True, required=False)
+    words_count = serializers.SerializerMethodField()
+
+    def get_words_count(self, obj):
+        return len(obj.article_text.split())
+
     # url = serializers.HyperlinkedRelatedField()
 
     class Meta:
         model = Project
+        unique_together = ("user", "name")
 
         read_only_fields = (
             "id",
@@ -121,7 +128,9 @@ class ProjectListCreateSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "lang",
+            "words_count",
             "title",
+            "article_text",
             "name",
             "chatbox",
             "qaBox",
@@ -133,15 +142,15 @@ class ProjectListCreateSerializer(serializers.ModelSerializer):
             "modified_at",
         )
 
-    # def validate_name(self, value):
-    #     user = self.context["request"].user
-    #     print(user)
+    def validate_name(self, value):
+        user = self.context["request"].user
+        print(user)
 
-    #     if Project.objects.filter(user=user, name=value).exists():
-    #         raise serializers.ValidationError(
-    #             "You already have a project with this name."
-    #         )
-    #     return value
+        if Project.objects.filter(user=user, name=value).exists():
+            raise serializers.ValidationError(
+                "You already have a project with this name."
+            )
+        return value
 
 
 class ProjectRetrieveUpdateDestroySerializer(serializers.ModelSerializer):
@@ -167,6 +176,7 @@ class ProjectRetrieveUpdateDestroySerializer(serializers.ModelSerializer):
             "outline",
             "used_credits",
             "user_name",
+            "excalidraws",
             "created_at",
             "modified_at",
         )

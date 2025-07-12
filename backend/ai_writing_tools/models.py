@@ -18,7 +18,7 @@ class Project(models.Model):
     lang = models.CharField(max_length=3, default="en")
     name = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
-    article = models.JSONField()
+    article = models.JSONField(default=[{"text": ""}])
     article_text = models.TextField(default="")
     outline = models.JSONField(default=list)
     description = models.TextField(default="")

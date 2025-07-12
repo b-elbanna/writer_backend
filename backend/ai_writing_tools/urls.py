@@ -3,17 +3,13 @@ from .views import (
     ProjectListCreateView,
     ProjectRetrieveUpdateDestroyView,
     SortByRelatednessView,
-)
-from .draw_views import (
     ExcalidrawRetrieveUpdateDestroyView,
     ExcalidrawListCreateView,
-)
-from .tools_views import (
     TextImprovementView,
     TextCompletionView,
     ArticleOutlineView,
+    GetArticleDescriptionView,
 )
-from .apis.views import GetArticleDescriptionView
 
 
 urlpatterns = [

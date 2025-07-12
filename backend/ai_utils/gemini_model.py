@@ -42,10 +42,10 @@ class GeminiModel(BaseGenerationModel):
     """Concrete class for Gemini models."""
 
     api_key = GEMINI_KEY
-    default_model = "gemini-2.0-flash"
+    default_model = "gemini-2.5-flash"
     client_class = genai.Client
-    available_models = ["gemini-2.0-flash"]
-    audio_transcription_model = "gemini-2.0-flash"
+    available_models = ["gemini-2.0-flash", "gemini-2.5-flash"]
+    audio_transcription_model = "gemini-2.5-flash"
     default_embedding_model = "text-embedding-004"
 
     def chat_completion(

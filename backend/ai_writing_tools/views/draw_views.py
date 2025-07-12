@@ -1,4 +1,3 @@
-import json
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
@@ -6,10 +5,10 @@ from rest_framework.generics import (
 
 
 # from .pricing import calc_credits
-from .models import (
+from ..models import (
     Excalidraw,
 )
-from .serializers import (
+from ..serializers import (
     ExcalidrawListCreateSerializer,
     ExcalidrawRetrieveUpdateDestroySerializer,
 )

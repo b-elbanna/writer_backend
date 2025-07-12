@@ -7,14 +7,18 @@ class GenerationModel:
     """Facade class for interacting with different AI models."""
 
     def __init__(
-        self, provider: Literal["gemini", "openai"] = "gemini", model: str = ""
+        self,
+        provider: Literal["gemini", "openai"] = "gemini",
+        model: str = "",
+        api_key=None,
     ):
         self.provider = provider
         self.model = model
+        self.api_key = api_key
         if provider == "openai":
-            self.model_instance = OpenaiModel(model)
+            self.model_instance = OpenaiModel(model, api_key=api_key)
         elif provider == "gemini":
-            self.model_instance = GeminiModel(model)
+            self.model_instance = GeminiModel(model, api_key=api_key)
         else:
             raise ValueError(f"Invalid provider: {provider}")
 
