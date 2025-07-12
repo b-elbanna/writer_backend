@@ -10,14 +10,23 @@ import { PasswordInput } from "../formFiels/passwordInput";
 import FormButton from "../formFiels/formButton";
 import SmileFaceLoader from "@/loaders/smileFace/smileFace";
 import { useOnSubmitLogin } from "@/utils/hooks/onSubmitLoginHook";
+import { useRouter } from "next/navigation";
+import pagePaths from "@/urlPaths/pagePaths";
+import useRefreshTokenPostFetcher from "@/swrDataFetcher/refreshTokenFetcher";
 
 export default function LoginForm() {
+	const router = useRouter();
+	const { mutate } = useRefreshTokenPostFetcher();
 	const { onSubmitLogin } = useOnSubmitLogin();
-
 	return (
 		<div className="w-full">
 			<Form
-				onSubmit={onSubmitLogin}
+				onSubmit={(v) => {
+					onSubmitLogin(v).then(() => {
+						mutate();
+						router.push(pagePaths.projectsPage);
+					});
+				}}
 				validate={validateLoginForm}
 				initialValues={{}}
 				render={({

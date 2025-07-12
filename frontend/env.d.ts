@@ -7,13 +7,14 @@ declare global {
 		qaBox: string;
 		chatbox: string;
 		article_text?: string;
-		article?: {};
+		article?: {}[];
 		description: string;
 		outline: {}[];
 		used_credits: 0;
 		user_name: string;
 		created_at: string;
 		modified_at: string;
+		words_count?: number;
 	}
 
 	interface PaperSearchDataInerface {

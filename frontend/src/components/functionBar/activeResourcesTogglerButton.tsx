@@ -23,7 +23,7 @@ export default function ActiveResourcesTogglerButton() {
 						Icon1={
 							<FileSearchIcon className="w-[18px] h-[18px] text-green-600" />
 						}
-						Icon2={<FileXIcon className="w-[18px] h-[18px] text-primary" />}
+						Icon2={<FileXIcon className="w-[18px] h-[18px] text-active" />}
 					/>
 				</div>
 			</SimpleTooltip>

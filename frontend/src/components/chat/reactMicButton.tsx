@@ -80,7 +80,7 @@ const MicButtonIcon = ({
 		return <PlayCircleIcon className="animate-pulse stroke-active" size={25} />;
 	else {
 		if (sendingStatus === "init") {
-			return <MicIcon size={25} className={`stroke-white `} />;
+			return <MicIcon size={25} className={`stroke-active `} />;
 		}
 		if (sendingStatus === "sending") {
 			return (

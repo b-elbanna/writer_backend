@@ -45,8 +45,10 @@ export function CheckBoxContainer({
 }) {
 	return (
 		<div className="my-7">
-			<div className="w-full mb-2 text-lg border-b border-black">{label}</div>
-			<div className="w-full px-3 max-h-72  overflow-auto ">{children}</div>
+			<div className="w-full py-3  mb-2 text-xl font-semibold border-b border-black">
+				{label}
+			</div>
+			<div className="w-full px-3   overflow-auto ">{children}</div>
 		</div>
 	);
 }

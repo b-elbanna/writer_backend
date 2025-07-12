@@ -29,7 +29,7 @@ export default function HeroSection() {
 						<CustomButton
 							onClickFunc={() => router.push(pagePaths.projectsPage)}
 							children="GO Now"
-							className="mt-12 !p-2 !px-3  mx-auto !block !tracking-[2px]"
+							className="mt-12 "
 						/>
 					</div>
 				</div>

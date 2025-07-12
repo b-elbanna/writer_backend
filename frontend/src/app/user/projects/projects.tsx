@@ -11,7 +11,7 @@ export function ProjectsBox({ projects }: { projects: ProjectInterface[] }) {
 	return (
 		<>
 			{" "}
-			{projects.length > 0 ? (
+			{projects?.length > 0 ? (
 				projects.map((project: ProjectInterface) => (
 					<ProjectBox key={project.id} project={project} />
 				))
@@ -126,9 +126,7 @@ export function ProjectBox({ project }: { project: ProjectInterface }) {
 							</p>
 							<div className="flex items-baseline gap-1">
 								<p className="text-xl font-semibold text-primary">
-									{project.article_text
-										?.split(/\s+/)
-										.filter((word) => word.length > 0).length || 0}
+									{project.words_count || 0}
 								</p>
 								<span className="text-xs text-gray-500">words</span>
 							</div>

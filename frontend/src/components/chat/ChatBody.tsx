@@ -67,7 +67,7 @@ export default function ChatBody({
 	return (
 		<div
 			ref={body}
-			className="flex-1 h-full w-full max-w-4xl mx-auto overflow-x-hidden overflow-y-auto px-4 md:px-6 py-4 space-y-6 scroll-smooth scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
+			className="flex-1 h-full w-full mx-auto overflow-x-hidden overflow-y-auto px-4 md:px-6 py-4 space-y-6 scroll-smooth scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
 		>
 			{currentChatbox.chatbox.messages &&
 				currentChatbox.chatbox.messages.map((message, index: number) => {

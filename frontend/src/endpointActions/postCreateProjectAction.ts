@@ -6,6 +6,7 @@ interface Values {
 	lang?: string;
 	description?: string;
 	outline: string[];
+	article_text?: string;
 }
 
 export default async function postCreateProjectAction(project: Values) {

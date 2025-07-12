@@ -38,32 +38,6 @@ export default function CustomExcalidraw() {
 					}, 2000);
 				}
 			}}
-			theme="light"
-			gridModeEnabled={false}
-			zenModeEnabled={true}
-			viewModeEnabled={false}
-			UIOptions={{
-				canvasActions: {
-					changeViewBackgroundColor: true,
-					clearCanvas: true,
-					loadScene: true,
-					saveToActiveFile: true,
-					saveAsImage: true,
-				},
-
-				// tool: {
-				// 	image: true,
-				// 	eraser: true,
-				// 	diamond: true,
-				// 	rectangle: true,
-				// 	circle: true,
-				// 	line: true,
-				// 	arrow: true,
-				// 	freedraw: true,
-				// 	selection: true,
-				// 	text: true,
-				// },
-			}}
 		/>
 	);
 }

@@ -1,7 +1,7 @@
 import { clientApi } from "@/baseApis/axiosBase";
 export interface CreateOutlineFormDataInterface {
 	title: string;
-	discription: string;
+	description: string;
 }
 export default function postCreateOutlineAction(
 	values: CreateOutlineFormDataInterface

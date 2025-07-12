@@ -5,17 +5,12 @@ import { useEffect } from "react";
 import useRefreshTokenFetcher from "@/swrDataFetcher/refreshTokenFetcher";
 import useRefreshTokenOnError from "./useRefreshTokenOnError";
 import pagePaths from "@/urlPaths/pagePaths";
-import useUserDataFetcher from "@/swrDataFetcher/userDataFetcher";
 
 const authProtection = (ProtectedPage: React.ComponentType<any>) => {
 	return (props: any) => {
 		useRefreshTokenOnError();
 		const { refreshData, isLoading, isError } = useRefreshTokenFetcher();
-		const {
-			user,
-			isLoading: userLoading,
-			isError: userError,
-		} = useUserDataFetcher();
+
 		const router = useRouter();
 		useEffect(() => {
 			// If the user is not authenticated, redirect to the login page

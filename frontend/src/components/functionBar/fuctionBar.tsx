@@ -39,12 +39,12 @@ export default function FuctionBar() {
 			<div
 				style={{ height: !currentTool.id ? "0%" : "100%" }}
 				className={`
-          transition-all ease-in-out duration-500 
-          w-full absolute border-t border-gray-200 bottom-0 z-[222] 
-          bg-white shadow-2xl rounded-t-xl 
-          flex flex-col
-          ${!currentTool.id ? "translate-y-full" : "translate-y-0"}
-        `}
+							transition-all ease-in-out duration-500 
+							w-full absolute border-t border-gray-200 bottom-0 z-[222] 
+							bg-white shadow-2xl rounded-t-xl 
+							flex flex-col
+          			${!currentTool.id ? "translate-y-full" : "translate-y-0"}
+        		`}
 			>
 				<WritingToolsBar />
 
@@ -54,7 +54,7 @@ export default function FuctionBar() {
 					{currentTool.id === 1 && (
 						<div className="h-full flex flex-col">
 							<div className="flex-1 overflow-y-auto px-4">
-								<div className="max-w-3xl mx-auto">
+								<div className=" max-w-7xl h-full mx-auto">
 									<ChatBody body={ref} lastSocketMessage={lastJsonMessage} />
 								</div>
 							</div>

@@ -160,7 +160,7 @@ export default function ChatInput({
 	}, [inputContent]);
 
 	return (
-		<div className=" absolute bottom-0 left-0 bg-gradient-to-t from-white to-transparent w-full px-10  py-3 z-20  ">
+		<div className=" bg-gradient-to-t from-white to-transparent w-full px-10  py-3 z-20  ">
 			<div className="flex items-center justify-center rounded-3xl p-2 shadow-2xl bg-primary m-auto">
 				<RecordView
 					inputRef={contentEditableRef}
@@ -181,15 +181,11 @@ export default function ChatInput({
 						onBlur={handelBlurEvent}
 					></div>
 					{currentUserProject.value.qaBox && (
-						<div className="pl-3 border-l border-gray-200">
+						<div className="ps-3 ">
 							<ActiveResourcesTogglerButton />
 						</div>
 					)}
-					<p
-						onMouseEnter={() => contentEditableRef.current?.focus()}
-						onClick={() => contentEditableRef.current?.focus()}
-						className="text-mygray w-full   absolute top-1/2 left-0 py-3 px-4  -translate-y-1/2  block"
-					>
+					<p className="text-mygray w-full pointer-events-none   absolute top-1/2 left-0 py-3 px-4  -translate-y-1/2  block">
 						{placeholderContent}
 					</p>
 					<button

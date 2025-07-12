@@ -48,4 +48,6 @@ function LoginPage() {
 	);
 }
 
-export default redirectAuthenticated(LoginPage);
+// export default redirectAuthenticated(LoginPage);
+
+export default LoginPage;

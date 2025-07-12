@@ -48,4 +48,5 @@ function SignupPage() {
 	);
 }
 
-export default redirectAuthenticated(SignupPage);
+// export default redirectAuthenticated(SignupPage);
+export default SignupPage;

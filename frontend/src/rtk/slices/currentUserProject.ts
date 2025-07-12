@@ -1,9 +1,7 @@
 import { clientApi } from "@/baseApis/axiosBase";
+import serializeNodesToString from "@/utils/editor/serializeNodesToString";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { Node } from "slate";
-const serializeNodesToText = (nodes: any) => {
-	return nodes.map((n: any) => Node.string(n)).join("\n");
-};
+
 export interface CurrentUserProject {
 	value: ProjectInterface;
 	status:
@@ -42,7 +40,7 @@ export const getCurrentUserProject = createAsyncThunk(
 	async ({ projectId }: GetCurrentUserProjectParams) => {
 		const response = await clientApi.get(`/writing/project/${projectId}`);
 		let newProject: ProjectInterface = response.data;
-		// newProject.article_text = serializeNodesToText(
+		// newProject.article_text = serializeNodesToString(
 		// 	JSON.parse(newProject.article || "[{text:''}]")
 		// );
 		return newProject;
@@ -54,13 +52,14 @@ export const createUserProject = createAsyncThunk(
 	async ({ project }: CreateUserProjectParams) => {
 		const response = await clientApi.post(`/writing/projects`, project);
 		let newProject: ProjectInterface = response.data;
-		const qaRes = await clientApi.post(`qa/qa-boxes`, {
-			name: newProject.name,
-			project: newProject.id,
-		});
-		let projectQABox: QABoxInterface = qaRes.data;
-		newProject.qaBox = projectQABox.id;
-		newProject.article_text = serializeNodesToText(newProject.article);
+		// const qaRes = await clientApi.post(`qa/qa-boxes`, {
+		// 	name: newProject.name,
+		// 	project: newProject.id,
+		// });
+		// let projectQABox: QABoxInterface = qaRes.data;
+		// newProject.qaBox = projectQABox.id;
+		if (newProject?.article)
+			newProject.article_text = serializeNodesToString(newProject.article);
 		return newProject;
 	}
 );
@@ -69,10 +68,10 @@ export const updateUserProject = createAsyncThunk(
 	async ({ projectId, projectBody }: UpdateUserProjectParams) => {
 		const response = await clientApi.patch(`/writing/project/${projectId}`, {
 			article: projectBody,
-			article_text: serializeNodesToText(projectBody),
+			article_text: serializeNodesToString(projectBody),
 		});
 		let newProject: ProjectInterface = response.data;
-		// newProject.article_text = serializeNodesToText(
+		// newProject.article_text = serializeNodesToString(
 		// 	JSON.parse(newProject.article || "[{text:''}]")
 		// );
 		return newProject;

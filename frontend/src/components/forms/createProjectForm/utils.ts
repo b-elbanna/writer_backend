@@ -46,7 +46,7 @@ export async function onSubmitCreateArticleFrom(
 		console.log("creating outline");
 		await postCreateOutlineAction({
 			title: values.title,
-			discription: values?.descriptions.join(","),
+			description: values?.descriptions.join(","),
 		}).then(async (res) => {
 			console.log(res.data);
 			let outLine = theEditor.api.markdown.deserialize(res.data);

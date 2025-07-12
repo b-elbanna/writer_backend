@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.prose > * {
+	all: revert;
+}
 
 :root {
 	/* text variables */
@@ -16,6 +19,16 @@
 	--text-activegreen: #b2e165;
 	--text-customred: #f44336;
 	caret-color: var(--action-color);
+
+	/* --color-primary-darkest: #72718c;  */
+}
+
+:root .excalidraw {
+	--excalidraw-color-primary: var(--action-color);
+	--excalidraw-color-primary-darker: hsl(var(--action) / 0.8);
+	/* --color-primary: var(--action-color);*/
+	--color-primary-darker: var(--action-color) !important;
+	--color-primary-light: hsl(var(--action) / 0.2) !important;
 }
 
 @layer base {

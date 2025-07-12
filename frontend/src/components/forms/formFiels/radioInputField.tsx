@@ -14,7 +14,13 @@ export function RadioInput({
 	return (
 		<div className=" group flex gap-2 flex-wrap justify-center border-black border-b cursor-pointer  ">
 			{optionValues.map((optionValue, i) => (
-				<Field name={name} id={name} type="radio" value={optionValue}>
+				<Field
+					name={name}
+					id={name}
+					key={optionValue}
+					type="radio"
+					value={optionValue}
+				>
 					{({ input, meta }) => (
 						<div className="group p-1 flex items-center flex-col ">
 							<input

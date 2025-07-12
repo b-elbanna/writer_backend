@@ -4,6 +4,7 @@ function validateSignupForm(values: Values) {
 	const errors: any = {};
 	const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 	const passRegex = /^(?=.*\d)(?=.*[a-z]).{8,20}$/;
+	const api_key_regex = /^AIzaSy[A-Za-z0-9_-]{33}$/;
 
 	if (values.first_name) {
 		if (values.first_name.length > 30) {
@@ -41,6 +42,16 @@ function validateSignupForm(values: Values) {
 			}
 		}
 	} else errors.password = " is required";
+
+	if (values.google_api_key) {
+		if (
+			values.google_api_key.length < 39 ||
+			!api_key_regex.test(values.google_api_key)
+		) {
+			console.log(values.google_api_key);
+			errors.google_api_key = "not valid api key";
+		}
+	} else errors.google_api_key = " is required";
 
 	return errors;
 }

@@ -12,4 +12,5 @@ export default {
 	projectsPage: "/user/projects",
 	profilePage: "/user/profile",
 	chatPage: "/user/chat",
+	projectCreatePage: "/user/projects/create",
 };

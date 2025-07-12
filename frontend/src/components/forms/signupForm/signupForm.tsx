@@ -9,19 +9,28 @@ import { PasswordInput } from "../formFiels/passwordInput";
 import FormButton from "../formFiels/formButton";
 import { SignupFormDataInterface } from "@/endpointActions/postSignupAction";
 import { useOnSubmitSignup } from "@/utils/hooks/onSubmitSignupHook";
+import { useRouter } from "next/navigation";
+import useRefreshTokenPostFetcher from "@/swrDataFetcher/refreshTokenFetcher";
+import pagePaths from "@/urlPaths/pagePaths";
 
 export interface Values extends SignupFormDataInterface {
 	confirmPassword: string;
 }
 
 export default function SignupForm() {
-	// let router = useRouter();
+	let router = useRouter();
+	const { mutate } = useRefreshTokenPostFetcher();
 	const { onSubmitSignup } = useOnSubmitSignup();
 
 	return (
 		<div className="w-full">
 			<Form
-				onSubmit={onSubmitSignup}
+				onSubmit={(v) => {
+					onSubmitSignup(v).then(() => {
+						mutate();
+						router.push(pagePaths.projectsPage);
+					});
+				}}
 				validate={validateSignupForm}
 				render={({ handleSubmit, errors, submitError, submitting, values }) => {
 					return submitting ? (
@@ -46,6 +55,11 @@ export default function SignupForm() {
 								</div>
 
 								<TextInput label="Email" name="email" values={values} />
+								<TextInput
+									label="Gemini Api Key"
+									name="google_api_key"
+									values={values}
+								/>
 
 								<PasswordInput
 									label="Password"

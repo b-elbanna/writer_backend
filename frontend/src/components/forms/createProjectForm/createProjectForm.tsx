@@ -11,7 +11,10 @@ import useUserProjectsFetcher from "@/swrDataFetcher/userProjectsFetcher";
 import { useRouter } from "next/navigation";
 import pagePaths from "@/urlPaths/pagePaths";
 import { RadioInput } from "../formFiels/radioInputField";
-import { TypesOfWrittenContent, FielsOfWrittenContent } from "./writtenContent";
+import {
+	TypesOfWrittenContent,
+	FeildsOfWrittenContent,
+} from "./writtenContent";
 import useMyEditor from "@/components/editor/editorBuilder";
 export interface CreateProjectFormDataInterface {
 	title: string;
@@ -103,8 +106,8 @@ export default function CreateProjectForm() {
 								name="written_content"
 							/>
 							<RadioInput
-								labels={FielsOfWrittenContent}
-								optionValues={FielsOfWrittenContent}
+								labels={FeildsOfWrittenContent}
+								optionValues={FeildsOfWrittenContent}
 								values={values}
 								name="targeted_field"
 							/>
